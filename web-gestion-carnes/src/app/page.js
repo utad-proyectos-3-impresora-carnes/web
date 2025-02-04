@@ -1,24 +1,21 @@
 "use client"
 import { useState } from "react";
-import { config } from "dotenv";
-
-config();
 
 // Ejemplo de como usar el servidor
 async function sendQuery(contents) {
-	return fetch(`${process.env.API_URL}/${contents}`);
+	return fetch(`${process.env.NEXT_PUBLIC_API_URL}${contents}`);
 }
 
 export default function Home() {
 
-	const [serverMessage, setServerMessage] = useState("");
+	const [serverAnswer, setServerMessage] = useState("");
 
 	// Ejemplo de como usar el servidor
 	const askServer = (parameter) => {
 		sendQuery(parameter).then((result) => {
 			const text = result.text();
 			text.then((plainText) => {
-				setServerAnswer(plainText);
+				setServerMessage(plainText);
 			})
 		})
 	}
