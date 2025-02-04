@@ -1,5 +1,4 @@
 "use client"
-import Image from "next/image";
 import { useState } from "react";
 import { config } from "dotenv";
 
@@ -28,10 +27,10 @@ export default function Home() {
 		<div>
 		<h1>Da printer app!</h1>
 		<p>The server says {serverAnswer}</p>
-		<button onClick={() => askServer("/")}>/</button>
-		<button onClick={() => askServer("/home")}>/home</button>
-		<button onClick={() => askServer("/test")}>/test</button>
-		<button onClick={() => askServer("/user")}>/user</button>
+		<button onClick={() => askServer("")}>/</button>
+		<button onClick={() => askServer("home")}>/home</button>
+		<button onClick={() => askServer("test")}>/test</button>
+		<button onClick={() => askServer("user")}>/user</button>
 	</div>
 	);
 }
