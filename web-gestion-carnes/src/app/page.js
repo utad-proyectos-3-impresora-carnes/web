@@ -3,7 +3,13 @@ import { useState } from "react";
 
 // Ejemplo de como usar el servidor
 async function sendQuery(contents) {
-	return fetch(`${process.env.NEXT_PUBLIC_API_URL}${contents}`);
+
+	const link = `${process.env.NEXT_PUBLIC_API_URL}${contents}`;
+
+	console.log("Calling", link);
+
+	return fetch(link);
+
 }
 
 export default function Home() {
