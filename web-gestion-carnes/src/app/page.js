@@ -18,6 +18,7 @@ export default function Home() {
 
 	// Ejemplo de como usar el servidor
 	const askServer = (parameter) => {
+		console.log("Sending param", parameter);
 		sendQuery(parameter).then((result) => {
 			const text = result.text();
 			text.then((plainText) => {
