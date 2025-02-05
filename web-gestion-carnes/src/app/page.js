@@ -6,7 +6,7 @@ async function sendQuery(contents) {
 
 	const link = `${process.env.NEXT_PUBLIC_API_URL}${contents}`;
 w
-	console.log("CalliAskingng", link);
+	console.log("Calli", link);
 
 	return fetch(link);
 
