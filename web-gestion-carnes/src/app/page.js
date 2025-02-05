@@ -5,8 +5,8 @@ import { useState } from "react";
 async function sendQuery(contents) {
 
 	const link = `${process.env.NEXT_PUBLIC_API_URL}${contents}`;
-w
-	console.log("Calli", link);
+
+	console.log("Breaking", link);
 
 	return fetch(link);
 
