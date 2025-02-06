@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react";
-
+soy un merge!
 // Ejemplo de como usar el servidor
 async function sendQuery(contents) {
 
