@@ -1,6 +1,8 @@
 "use client"
 import { useState } from "react";
 
+//loco 
+
 // Ejemplo de como usar el servidor
 async function sendQuery(contents) {
 
