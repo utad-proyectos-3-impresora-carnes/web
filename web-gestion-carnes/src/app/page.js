@@ -1,6 +1,7 @@
 "use client"
 import { useState } from "react";
 
+// cambio en maoin
 // Ejemplo de como usar el servidor
 async function sendQuery(contents) {
 
