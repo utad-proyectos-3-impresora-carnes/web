@@ -2,6 +2,7 @@
 import { useState } from "react";
 
 // Cambios de rama
+// cambio en maoin
 
 // Ejemplo de como usar el servidor
 async function sendQuery(contents) {
