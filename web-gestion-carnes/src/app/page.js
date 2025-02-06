@@ -1,6 +1,8 @@
 "use client"
 import { useState } from "react";
 
+// Cambios de rama
+
 // Ejemplo de como usar el servidor
 async function sendQuery(contents) {
 
