@@ -1,5 +1,6 @@
 "use client"
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 // Cambios de rama
 // cambio en maoin
@@ -18,6 +19,7 @@ async function sendQuery(contents) {
 export default function Home() {
 
 	const [serverAnswer, setServerMessage] = useState("");
+	const router = useRouter();
 
 	// Ejemplo de como usar el servidor
 	const askServer = (parameter) => {
@@ -38,6 +40,7 @@ export default function Home() {
 			<button className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5" onClick={() => askServer("home")}>/home</button>
 			<button className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5" onClick={() => askServer("test")}>/test</button>
 			<button className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5" onClick={() => askServer("user")}>/user</button>
+			<button className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5" onClick={() => router.push("/login")}>/login</button>
 		</div>
 	);
 }
