@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,7 +50,10 @@ export default function Login() {
           onChange={(e) => setPassword(e.target.value)} 
           className="border p-2 rounded mb-2 w-full"
         />
-        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded w-full">Login</button>
+        <div className="flex gap-4">
+          <button type="button" onClick={() => router.push("/")} className="bg-gray-500 text-white px-4 py-2 rounded w-full">Home</button>
+          <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded w-full">Login</button>
+        </div>        
         {error && <p className="text-red-500 mt-2">{error}</p>}
         {success && <p className="text-green-500 mt-2">{success}</p>}
       </form>
