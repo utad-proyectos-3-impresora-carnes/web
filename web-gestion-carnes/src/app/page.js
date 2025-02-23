@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import SearchFilter from "./Components/filters";
 
 // Función para enviar consultas al servidor
 async function sendQuery(contents) {
@@ -13,7 +14,6 @@ export default function Home() {
     const [serverAnswer, setServerMessage] = useState("");
     const router = useRouter();
 
-    // Función para hacer una consulta al servidor
     const askServer = (parameter) => {
         console.log("Sending param", parameter);
         sendQuery(parameter).then((result) => {
@@ -38,21 +38,37 @@ export default function Home() {
                 </nav>
             </header>
 
-            {/* Hero Section */}
-            <main className="flex flex-col items-center justify-center text-center py-16 px-6">
-                <h2 className="text-3xl font-bold text-gray-800">Impresión de carnets</h2>
-                <p className="text-gray-600 mt-4 max-w-lg">
-                    Gestiona e imprime carnets de manera rápida y sencilla.
-                </p>
-                <div className="mt-6 w-64 h-96 bg-white shadow-lg rounded-lg flex items-center justify-center border">
+            <main className="flex h-screen">
+                {/* Sidebar de Filtros */}
+                <aside className="w-64 p-4">
+                    <SearchFilter onApply={askServer} />
+                </aside>
+
+                {/* Contenido principal*/}
+                <div className="flex flex-col items-center justify-center flex-grow text-center max-w-3xl mx-auto -mt-20">
+                    <h2 className="text-4xl font-bold text-gray-800">Impresión de carnets</h2>
+                    <p className="text-gray-600 mt-4 max-w-lg text-lg">
+                        Gestiona e imprime carnets de manera rápida y sencilla.
+                    </p>
+
+                    {/* Caja del carnet con mayor tamaño */}
+                    <div className="mt-8 w-96 h-[500px] bg-white shadow-lg rounded-lg flex items-center justify-center border">
+                    </div>
                 </div>
             </main>
 
-            {/* Acerca de */}
-            <section className="bg-white py-10 text-center">
-                <h3 className="text-2xl font-semibold text-gray-800">Acerca de</h3>
-                <p className="text-gray-600 mt-2"></p>
-            </section>
+                {/* Acerca de 
+
+                <section className="bg-white py-10 text-center">
+                    <h3 className="text-2xl font-semibold text-gray-800">Acerca de</h3>
+                    <p className="text-gray-600 mt-2"></p>
+                </section>
+
+                */}
+
+                {/* Footer */}
+
+
         </div>
     );
 }
