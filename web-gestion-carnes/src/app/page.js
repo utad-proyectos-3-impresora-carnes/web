@@ -1,74 +1,116 @@
-"use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import SearchFilter from "./Components/filters";
+'use client';
 
-// Función para enviar consultas al servidor
-async function sendQuery(contents) {
-    const link = `${process.env.NEXT_PUBLIC_API_URL}${contents}`;
-    console.log("Breaking", link);
-    return fetch(link);
-}
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 
 export default function Home() {
-    const [serverAnswer, setServerMessage] = useState("");
-    const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
+  const router = useRouter();
+  const [rotation, setRotation] = useState({ x: 0, y: 0 });
 
-    const askServer = (parameter) => {
-        console.log("Sending param", parameter);
-        sendQuery(parameter).then((result) => {
-            const text = result.text();
-            text.then((plainText) => {
-                setServerMessage(plainText);
-            });
-        });
-    };
+  const handleMouseMove = (e) => {
+    const { clientX, clientY, currentTarget } = e;
+    const { left, top, width, height } = currentTarget.getBoundingClientRect();
+    const x = ((clientX - left) / width - 0.5) * 40; // Mayor inclinación
+    const y = ((clientY - top) / height - 0.5) * -40;
+    setRotation({ x, y });
+  };
 
-    return (
-        <div className="min-h-screen bg-gray-100">
-            {/* Header */}
-            <header className="bg-[#0864ec] text-white py-4 px-6 flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                    <h1 className="text-xl font-bold">U-tad</h1>
-                </div>
-                <nav className="flex gap-4">
-                    <button onClick={() => router.push("/")} className="hover:underline">Inicio</button>
-                    <button onClick={() => router.push("/login")} className="hover:underline">Login</button>
-                    <button onClick={() => router.push("/registro")} className="hover:underline">Registro</button>
-                </nav>
-            </header>
+  const handleMouseLeave = () => {
+    setRotation({ x: 0, y: 0 });
+  };
 
-            <main className="flex h-screen">
-                {/* Sidebar de Filtros */}
-                <aside className="w-64 p-4">
-                    <SearchFilter onApply={askServer} />
-                </aside>
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError(null);
 
-                {/* Contenido principal*/}
-                <div className="flex flex-col items-center justify-center flex-grow text-center max-w-3xl mx-auto -mt-20">
-                    <h2 className="text-4xl font-bold text-gray-800">Impresión de carnets</h2>
-                    <p className="text-gray-600 mt-4 max-w-lg text-lg">
-                        Gestiona e imprime carnets de manera rápida y sencilla.
-                    </p>
+    const response = await fetch('/Dummies/user_credentials.json');
+    if (!response.ok) {
+      setError('Error loading credentials');
+      return;
+    }
 
-                    {/* Caja del carnet con mayor tamaño */}
-                    <div className="mt-8 w-96 h-[500px] bg-white shadow-lg rounded-lg flex items-center justify-center border">
-                    </div>
-                </div>
-            </main>
+    const data = await response.json();
+    const user = data.users.find(u => u.username === email && u.password === password);
 
-                {/* Acerca de 
+    if (user) {
+      router.push('/dashboard'); // Redirigir a la página principal después del login
+    } else {
+      setError('Credenciales inválidas');
+    }
+  };
 
-                <section className="bg-white py-10 text-center">
-                    <h3 className="text-2xl font-semibold text-gray-800">Acerca de</h3>
-                    <p className="text-gray-600 mt-2"></p>
-                </section>
+  return (
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
+      {/* Header */}
+      <header className="bg-[#0864ec] text-white py-6 px-8 w-full flex justify-between items-center fixed top-0 left-0 right-0 text-2xl shadow-lg">
+        <h1 className="font-bold">U-tad</h1>
+      </header>
 
-                */}
+      {/* Espaciador para evitar solapamiento con el header */}
+      <div className="mt-24"></div>
 
-                {/* Footer */}
+      {/* Contenedor Principal con más separación entre elementos */}
+      <div className="flex justify-between items-center w-full max-w-[1100px] mt-10 px-16">
+        {/* Carnet con sombreado dinámico */}
+        <motion.img
+          src="/carnet_universitario_0.jpg"
+          alt="Carnet Universitario"
+          className="w-96 h-auto shadow-2xl rounded-lg"
+          style={{ boxShadow: '20px 20px 40px rgba(0,0,0,0.6)' }}
+          animate={{ rotateX: rotation.y, rotateY: rotation.x }}
+          transition={{ type: "spring", stiffness: 70, damping: 10 }}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+        />
 
+        {/* Contenedor de login */}
+        <div className="flex flex-col items-center text-center">
+          {/* Título separado con más tamaño */}
+          <h2 className="text-5xl font-bold text-gray-800 mb-10">Gestión de Carnets</h2>
+          <p className="text-gray-700 text-xl max-w-lg mb-12">
+            Accede a tu cuenta para gestionar e imprimir carnets de manera rápida y sencilla.
+          </p>
 
+          {/* Formulario de Login más centrado */}
+          <div className="p-12 bg-white shadow-xl rounded-lg w-[500px]">
+            <h3 className="text-3xl font-bold text-gray-800 text-center mb-6">Inicia sesión</h3>
+            <form onSubmit={handleLogin}>
+              <input
+                type="email"
+                placeholder="Correo electrónico"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="border p-3 text-lg rounded w-full mb-4 focus:ring-2 focus:ring-blue-500 transition"
+                required
+              />
+              <input
+                type="password"
+                placeholder="Contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="border p-3 text-lg rounded w-full mb-4 focus:ring-2 focus:ring-blue-500 transition"
+                required
+              />
+              <button type="submit" className="bg-[#0864ec] text-white px-6 py-3 rounded w-full text-lg font-semibold mt-4 hover:bg-blue-700 transition">
+                Entrar
+              </button>
+              {error && <p className="text-red-500 mt-4 text-center text-lg">{error}</p>}
+            </form>
+
+            {/* Enlace a Registro */}
+            <p className="mt-6 text-gray-600 text-lg text-center">
+              ¿No tienes cuenta? 
+              <button onClick={() => router.push('/register')} className="text-[#0864ec] font-bold ml-1 hover:text-[#0648b3] transition">
+                Regístrate
+              </button>
+            </p>
+          </div>
         </div>
-    );
+      </div>
+    </div>
+  );
 }
