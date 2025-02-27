@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import FilterSidebar from "../Components/filters";
-import Table from "../Components/table";
+import FilterSidebar from "../components/filters";
+import Table from "../components/table";
 
 export default function Page() {
   const [data, setData] = useState([]);
