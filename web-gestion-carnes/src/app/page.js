@@ -55,12 +55,11 @@ export default function Home() {
 
       {/* Contenedor Principal con más separación entre elementos */}
       <div className="flex justify-between items-center w-full max-w-[1100px] mt-10 px-16">
-        {/* Carnet con sombreado dinámico */}
+        {/* Carnet sin sombreado */}
         <motion.img
-          src="/carnet_universitario_0.jpg"
+          src="/U-TAD_CENTRO_DIGITAL.png"
           alt="Carnet Universitario"
-          className="w-96 h-auto shadow-2xl rounded-lg"
-          style={{ boxShadow: '20px 20px 40px rgba(0,0,0,0.6)' }}
+          className="w-[350px] h-auto object-contain"
           animate={{ rotateX: rotation.y, rotateY: rotation.x }}
           transition={{ type: "spring", stiffness: 70, damping: 10 }}
           onMouseMove={handleMouseMove}
