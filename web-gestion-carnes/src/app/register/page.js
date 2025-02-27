@@ -41,7 +41,7 @@ export default function Register() {
       <div className="flex flex-col items-center">
 
         <div className="p-10 bg-white shadow-xl rounded-lg w-[500px]">
-          <h3 className="text-3xl font-bold text-gray-800 text-center mb-6">Registro</h3>
+          <h3 className="text-3xl font-bold text-gray-800 text-center mb-6">REGISTRO</h3>
           <form onSubmit={handleRegister}>
             <input
               type="text"
@@ -76,7 +76,7 @@ export default function Register() {
               required
             />
             <button type="submit" className="bg-[#0864ec] text-white px-6 py-3 rounded w-full text-lg font-semibold mt-4 hover:bg-blue-700 transition">
-              Registrarse
+              CREAR CUENTA
             </button>
             {error && <p className="text-red-500 mt-4 text-center text-lg">{error}</p>}
           </form>
