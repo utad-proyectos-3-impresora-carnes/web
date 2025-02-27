@@ -29,9 +29,9 @@ export default function Register() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
-      {/* Header */}
+      {/* Header con Logo */}
       <header className="bg-[#0864ec] text-white py-6 px-8 w-full flex justify-between items-center fixed top-0 left-0 right-0 text-2xl shadow-lg">
-        <h1 className="font-bold">U-tad</h1>
+        <img src="/LOGO_U.png" alt="Logo U-tad" className="h-10" />
       </header>
 
       {/* Espaciador para evitar solapamiento con el header */}
@@ -39,7 +39,6 @@ export default function Register() {
 
       {/* Contenido de Registro */}
       <div className="flex flex-col items-center">
-
         <div className="p-10 bg-white shadow-xl rounded-lg w-[500px]">
           <h3 className="text-3xl font-bold text-gray-800 text-center mb-6">REGISTRO</h3>
           <form onSubmit={handleRegister}>
