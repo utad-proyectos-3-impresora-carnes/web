@@ -45,9 +45,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
-      {/* Header */}
+      {/* Header con Logo */}
       <header className="bg-[#0864ec] text-white py-6 px-8 w-full flex justify-between items-center fixed top-0 left-0 right-0 text-2xl shadow-lg">
-        <h1 className="font-bold">U-tad</h1>
+        <img src="/LOGO_U.png" alt="Logo U-tad" className="h-10" /> 
       </header>
 
       {/* Espaciador para evitar solapamiento con el header */}
@@ -59,7 +59,7 @@ export default function Home() {
         <motion.img
           src="/U-TAD_CENTRO_DIGITAL.png"
           alt="Carnet Universitario"
-          className="w-[350px] h-auto object-contain"
+          className="w-[400px] h-auto object-contain"
           animate={{ rotateX: rotation.y, rotateY: rotation.x }}
           transition={{ type: "spring", stiffness: 70, damping: 10 }}
           onMouseMove={handleMouseMove}
@@ -69,14 +69,14 @@ export default function Home() {
         {/* Contenedor de login */}
         <div className="flex flex-col items-center text-center">
           {/* Título separado con más tamaño */}
-          <h2 className="text-5xl font-bold text-gray-800 mb-10">Gestión de Carnets</h2>
+          <h2 className="text-5xl font-bold text-gray-800 mb-10">GESTOR CARNETS U-TAD</h2>
           <p className="text-gray-700 text-xl max-w-lg mb-12">
-            Accede a tu cuenta para gestionar e imprimir carnets de manera rápida y sencilla.
+            Accede a tu cuenta para gestionar e imprimir carnets del alumnado de manera rápida y sencilla.
           </p>
 
           {/* Formulario de Login más centrado */}
           <div className="p-12 bg-white shadow-xl rounded-lg w-[500px]">
-            <h3 className="text-3xl font-bold text-gray-800 text-center mb-6">Inicia sesión</h3>
+            <h3 className="text-3xl font-bold text-gray-800 text-center mb-6">INICIAR SESIÓN</h3>
             <form onSubmit={handleLogin}>
               <input
                 type="email"
