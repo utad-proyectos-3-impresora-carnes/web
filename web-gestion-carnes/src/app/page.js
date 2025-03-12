@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 
@@ -10,6 +10,7 @@ export default function Home() {
   const [error, setError] = useState(null);
   const router = useRouter();
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
+
 
   const handleMouseMove = (e) => {
     const { clientX, clientY, currentTarget } = e;
@@ -24,23 +25,30 @@ export default function Home() {
   };
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setError(null);
+      e.preventDefault();
+      setError(null);
 
-    const response = await fetch('/Dummies/user_credentials.json');
-    if (!response.ok) {
-      setError('Error loading credentials');
-      return;
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || 'Ha ocurrido un error.');
+        }
+
+        localStorage.setItem('token', data.token);
+        router.push('/dashboard');
+      }
+      catch (error) {
+        setError(error.message || 'Ha ocurrido un error.');
+
     }
 
-    const data = await response.json();
-    const user = data.users.find(u => u.username === email && u.password === password);
-
-    if (user) {
-      router.push('/dashboard'); // Redirigir a la página principal después del login
-    } else {
-      setError('Credenciales inválidas');
-    }
   };
 
   return (
