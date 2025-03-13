@@ -3,12 +3,14 @@
 import { useState, useEffect } from "react";
 import FilterSidebar from "@/components/filters";
 import Table from "@/components/table";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({});
   const[error, setError] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchMembersData = async () => {
@@ -31,10 +33,6 @@ export default function Page() {
             Authorization: `Bearer ${token}`,
           },
         });
-  
-        if (response.status === 401) {
-          throw new Error("Token expirado. Redirigiendo al login...");
-        }
   
         if (!response.ok) {
           throw new Error(`Error ${response.status}: No se pudieron cargar los miembros`);
