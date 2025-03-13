@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import FilterSidebar from "@/components/filters";
 import Table from "@/components/table";
+import Header from "@/components/header";
 import { useRouter } from "next/navigation";
 
 export default function Page() {
@@ -64,37 +65,36 @@ export default function Page() {
   };
 
 
-  if (error) {
-    return(
-      <div className="flex h-screen">
-        <div className="flex-1 p-6">
-          <h1 className="text-3xl font-bold text-red-500">Error al cargar los datos. F</h1>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex h-screen">
-    { error ? (
-
-      <div className="flex-1 p-6">
-        <h1 className="text-3xl font-bold text-red-500">Error al cargar los datos. F</h1>
-      </div>
-
-    ) : (
-      <>
-        {/* Sidebar de filtros */}
-        <FilterSidebar onApply={handleApplyFilters} />
-
-        {/* Contenedor de la tabla */}
-        <div className="flex-1 p-6">
-          <Table data={data} loading={loading} />
+    <div className="h-screen w-full">
+      {error ? (
+        <div className="flex h-screen items-center justify-center">
+          <h1 className="text-3xl font-bold text-red-500">
+            Error al cargar los datos.
+          </h1>
         </div>
-      </>
-    )}
+      ) : (
+        <>
+          {/* Header fijo en la parte superior */}
+          <Header />
+  
+          {/* Contenedor principal con Sidebar a la izquierda y Tabla a la derecha */}
+          <div className="flex pt-1 h-full">
+            {/* Sidebar de filtros a la izquierda */}
+            <aside className="w-1/4 bg-gray-100 p-4 h-full">
+              <FilterSidebar onApply={handleApplyFilters} />
+            </aside>
+  
+            {/* Contenedor de la tabla */}
+            <main className="flex-1 p-6">
+              <Table data={data} loading={loading} />
+            </main>
+          </div>
+        </>
+      )}
     </div>
   );
+  
 }
 
 
