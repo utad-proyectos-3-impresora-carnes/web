@@ -1,14 +1,18 @@
 "use client";
 
+
+import { useState, useEffect} from "react";
+
+
 export default function Table({data, loading}) {
+
+
+    if (loading) {
+        return <p>Loading...</p>;
+    }
 
     return (
         <div className="overflow-x-auto">
-
-            {loading? (
-                <p className="content-center">Cargando...</p>
-            ) : (
-
             <table className="table-auto w-full">
                 <thead>
                     <tr>
@@ -27,7 +31,6 @@ export default function Table({data, loading}) {
                     ))}
                 </tbody>
             </table>
-            )}
         </div>
 
     );
