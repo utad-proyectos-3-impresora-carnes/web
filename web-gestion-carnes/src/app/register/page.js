@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 export default function Register() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
   const [confirmEmail, setConfirmEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -16,32 +15,16 @@ export default function Register() {
     e.preventDefault();
     setError(null);
 
+    // Validar que los correos coincidan
     if (email !== confirmEmail) {
       setError('Los correos electrónicos no coinciden.');
       return;
     }
 
-    const requestBody = JSON.stringify({ email, password, phone });
-    console.log("Datos enviados a la API:", requestBody);
+    console.log('Registrando usuario:', { name, email, password });
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password, phone }),
-    })
-      .then(async (res) => {
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.message || 'Ha ocurrido un error.');
-        }
-
-        localStorage.setItem('token', data.token);
-        router.push('/dashboard');
-      })
-      .catch((error) => {
-        setError(error.message || 'Ha ocurrido un error.');
-      });
+    // Redirigir al login después del registro
+    router.push('/');
   };
 
   return (
@@ -67,14 +50,6 @@ export default function Register() {
               className="border p-3 text-lg rounded w-full mb-4 focus:ring-2 focus:ring-blue-500 transition"
               required
             />
-            <input
-              type="tel"
-              placeholder="Teléfono"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="border p-3 text-lg rounded w-full mb-4 focus:ring-2 focus:ring-blue-500 transition"
-              required
-              />
             <input
               type="email"
               placeholder="Correo electrónico"
