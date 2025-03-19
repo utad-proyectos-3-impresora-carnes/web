@@ -12,6 +12,7 @@ export default function Home() {
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
 
 
+
   const handleMouseMove = (e) => {
     const { clientX, clientY, currentTarget } = e;
     const { left, top, width, height } = currentTarget.getBoundingClientRect();

@@ -66,11 +66,6 @@ export default function Page() {
   };
 
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    router.push("/");
-  }
-
 
   return (
     <div className="h-screen w-full">
