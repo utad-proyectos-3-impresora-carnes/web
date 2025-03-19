@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from "next/navigation";
 
 export default function Login() {
@@ -10,27 +10,41 @@ export default function Login() {
   const [success, setSuccess] = useState(null);
   const router = useRouter();
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
-    
-    const response = await fetch('/Dummies/user_credentials.json');
-    
-    if (!response.ok) {
-      setError('Error loading credentials');
-      return;
-    }
-    
-    const data = await response.json();
-    const user = data.users.find(u => u.username === username && u.password === password);
-    
-    if (user) {
-      setSuccess('Login successful');
-    } else {
-      setError('Invalid credentials');
+  
+    try {
+
+      if (typeof window === "undefined") return; // Evita ejecución en el servidor
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+  
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.message || "Error en el inicio de sesión");
+      }
+  
+      // Guardar el token y el ID del usuario
+      localStorage.setItem("token", result.token);
+      localStorage.setItem("userID", result.user._id); // Guardar el _id correctamente
+  
+      setSuccess("Login exitoso");
+      router.push("/dashboard"); // Redirige al dashboard
+    } catch (error) {
+      setError(error.message || "Error en el inicio de sesión");
     }
   };
+  
+  
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
