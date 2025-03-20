@@ -6,7 +6,7 @@ import Table from "@/components/table";
 import Header from "@/components/header";
 import { useRouter } from "next/navigation";
 import { fetchAllMembersData } from "@/services/member";
-
+import { fetchToken } from "@/services/tokenHandler";
 export default function Page() {
 	const [data, setData] = useState([]);
 	const [loading, setLoading] = useState(true);
