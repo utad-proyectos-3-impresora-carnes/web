@@ -22,7 +22,6 @@ export async function fetchFilteredMembersData(filters): Promise<any[]> {
 		fetchToken(),
 		{
 			method: "GET",
-			body: filters
 		});
 
 	return data;
