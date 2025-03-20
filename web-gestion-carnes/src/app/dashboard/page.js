@@ -16,7 +16,7 @@ export default function Page() {
 
 	useEffect(() => {
 		if (typeof window === "undefined") return; // Evita ejecución en el servidor
-		fetchAllMembersData().then(res => {
+		fetchAllMembersData(fetchToken()).then(res => {
 			setData(res);
 			setLoading(false);
 		}).catch(error => console.error(error));

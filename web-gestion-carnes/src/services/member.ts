@@ -1,13 +1,13 @@
-"use client"
+"use server"
 
 import callServer from "./callServer";
 import { fetchToken } from "./tokenHandler";
 
-export async function fetchAllMembersData(): Promise<any[]> {
+export async function fetchAllMembersData(token: string): Promise<any[]> {
 
 	const data: any[] = await callServer(
 		"/api/member",
-		fetchToken(),
+		token,
 		{
 			method: "GET",
 		});
@@ -15,11 +15,11 @@ export async function fetchAllMembersData(): Promise<any[]> {
 	return data;
 }
 
-export async function fetchFilteredMembersData(filters): Promise<any[]> {
+export async function fetchFilteredMembersData(token: string, filters): Promise<any[]> {
 
 	const data: any[] = await callServer(
 		"/api/member/filtered",
-		fetchToken(),
+		token,
 		{
 			method: "GET",
 		});
