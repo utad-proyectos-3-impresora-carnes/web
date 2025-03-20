@@ -5,6 +5,7 @@ import FilterSidebar from "@/components/filters";
 import Table from "@/components/table";
 import Header from "@/components/header";
 import { useRouter } from "next/navigation";
+import { fetchAllMembersData } from "@/services/member";
 
 export default function Page() {
 	const [data, setData] = useState([]);
@@ -15,8 +16,10 @@ export default function Page() {
 
 	useEffect(() => {
 		if (typeof window === "undefined") return; // Evita ejecución en el servidor
-
-		fetchMembersData();
+		fetchAllMembersData().then(res => {
+			setData(res);
+			setLoading(false);
+		}).catch(error => console.error(error));
 	}, []);
 
 
