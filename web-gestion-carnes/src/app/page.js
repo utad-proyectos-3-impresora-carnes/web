@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { loginUser } from '../services/user';
+
 
 export default function Home() {
   const [email, setEmail] = useState('');
@@ -30,21 +32,11 @@ export default function Home() {
       setError(null);
 
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password }),
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.message || 'Ha ocurrido un error.');
-        }
-
-        localStorage.setItem('token', data.token);
-        router.push('/dashboard');
+        loginUser(email, password).then((data) => {
+          localStorage.setItem('token', data.token);
+          router.push('/dashboard')});
       }
+      
       catch (error) {
         setError(error.message || 'Ha ocurrido un error.');
 

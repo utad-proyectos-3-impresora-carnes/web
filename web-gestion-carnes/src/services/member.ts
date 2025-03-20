@@ -11,8 +11,9 @@ export async function fetchAllMembersData(token: string): Promise<any[]> {
 		{
 			method: "GET",
 		});
-
+	console.log(data);
 	return data;
+
 }
 
 export async function fetchFilteredMembersData(token: string, filters): Promise<any[]> {
