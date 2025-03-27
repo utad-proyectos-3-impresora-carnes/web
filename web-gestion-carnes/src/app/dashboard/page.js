@@ -36,7 +36,7 @@ export default function Page() {
 
 
 	return (
-		<div className="h-screen w-full overflow-hidden mt-[-15px]">
+		<div className="h-screen w-full overflow-hidden mt-2">
 		  {error ? (
 			<div className="flex h-screen items-center justify-center">
 			  <h1 className="text-3xl font-bold text-red-500">
@@ -47,17 +47,19 @@ export default function Page() {
 			<>
 			  <Header />
 	  
-			  <div className="flex pt-16 h-[calc(100vh-4rem)]">
-				{/* Sidebar fijo a la izquierda */}
-				<aside className="w-64">
-				  <FilterSidebar onApply={handleApplyFilters} />
+			  <div className="flex pt-16 h-[calc(100vh-4rem)] overflow-hidden">
+				{/* Sidebar ya forma parte del flujo */}
+				<aside className="w-64 h-full shrink-0">
+					<FilterSidebar onApply={handleApplyFilters} />
 				</aside>
-	  
-				{/* Contenido scrollable */}
-				<main className="flex-1 overflow-y-auto p-6">
-				  <CarnetTable data={data} loading={loading} />
+
+				{/* Contenido principal */}
+				<main className="flex-1 overflow-y-auto px-0 mr-[-22px]">
+					<CarnetTable data={data} loading={loading} />
 				</main>
-			  </div>
+			
+			</div>
+
 			</>
 		  )}
 		</div>

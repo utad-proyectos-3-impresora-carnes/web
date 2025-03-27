@@ -56,26 +56,26 @@ export default function CarnetTable({ data, loading }) {
     nodes.length > 0 && selectedVisibleCount === nodes.length;
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto rounded-xl border border-gray-300 shadow-md">
       {loading ? (
         <p className="text-center py-4">Cargando...</p>
       ) : (
         <>
-          <table className="table-auto w-full border-collapse border border-gray-300">
-            <thead className="bg-gray-200">
+          <table className="table-auto w-full border-collapse px-0 border border-gray-300">
+            <thead className="bg-gray-800 text-white">
               <tr>
-                <th className="border border-gray-300 px-4 py-2 text-left text-sm font-semibold text-gray-700 uppercase">
+                <th className="border border-gray-300 px-4 py-2 text-left text-sm font-semibold uppercase">
                   Nombre
                 </th>
-                <th className="border border-gray-300 px-4 py-2 text-left text-sm font-semibold text-gray-700 uppercase">
+                <th className="border border-gray-300 px-4 py-2 text-left text-sm font-semibold uppercase">
                   DNI
                 </th>
-                <th className="border border-gray-300 px-4 py-2 text-left text-sm font-semibold text-gray-700 uppercase">
+                <th className="border border-gray-300 px-4 py-2 text-left text-sm font-semibold  uppercase">
                   Edad
                 </th>
-                <th className="border border-gray-300 px-4 py-2 text-right text-sm font-semibold text-gray-700 uppercase">
+                <th className="border border-gray-300 px-4 py-2 text-right text-sm font-semibold uppercase">
                   <div className="flex justify-end items-center gap-3">
-                    <Eye className="w-5 h-5 text-gray-600" />
+                    <Eye className="w-5 h-5" />
                     <input
                       type="checkbox"
                       className="w-5 h-5 cursor-pointer"
@@ -152,9 +152,11 @@ export default function CarnetTable({ data, loading }) {
 
           <div ref={observerRef} className="h-10" />
           {itemsToShow < data.length && (
-            <p className="text-center text-sm mt-2 text-gray-500">
-              Cargando más carnets...
+            <p className="text-center text-sm mt-2 text-gray-500 flex items-center justify-center gap-2">
+              
+              <span className="w-10 h-10">Cargando más carnets...</span>
             </p>
+
           )}
         </>
       )}
