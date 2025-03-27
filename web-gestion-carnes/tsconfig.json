@@ -24,6 +24,6 @@
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "middleware.js", "src/services/user.js", "src/services/tokenHandler.js", "src/services/member.js", "src/services/group.js", "src/services/callServer.js", "src/services/auth.js"  ],
   "exclude": ["node_modules"]
 }

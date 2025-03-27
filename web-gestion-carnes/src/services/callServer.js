@@ -1,6 +1,6 @@
 "use server"
 
-export default async function callServer(url: string, token: string | null, options: RequestInit): Promise<any> {
+export default async function callServer(url, token, options = {}) {
 	try {
 		options.headers = {
 			"Content-Type": "application/json",

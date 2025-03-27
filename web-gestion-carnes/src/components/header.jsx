@@ -12,7 +12,7 @@ export default function Header() {
     setClientMounted(true);
   }, []);
 
-  const router = clientMounted ? useRouter() : null;
+  const router = useRouter();
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -44,7 +44,7 @@ export default function Header() {
         <div className="flex items-center gap-3 relative">
           {/* Botón IMPRIMIR */}
           <button className="flex items-center bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition text-sm">
-            IMPRIMIR
+            IMPRIMIR 
             <Printer className="ml-2 w-5 h-5" />
           </button>
 

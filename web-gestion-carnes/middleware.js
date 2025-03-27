@@ -1,14 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/services/auth'; // Importa la función auth
+const { NextResponse } = require('next/server');
+const { auth } = require('./src/services/auth'); // Importa la función auth
 
-const PUBLIC_URLS: Array<string> = ['/', '/register'];
+const PUBLIC_URLS = ['/', '/register'];
 
-function isPublicUrl(targetUrl: string): boolean {
+function isPublicUrl(targetUrl) {
     return PUBLIC_URLS.includes(targetUrl);
 }
 
-export async function middleware(request: NextRequest) {
-
+async function middleware(request) {
     console.log("Middleware ejecutándose en:", request.nextUrl.pathname);
     
     const pathname = request.nextUrl.pathname;
@@ -37,8 +36,10 @@ export async function middleware(request: NextRequest) {
     }
 }
 
-export const config = {
+const config = {
     matcher: [
         '/((?!_next/static|_next/image|favicon.ico|.\\.(?:css|js|png|jpg|jpeg|svg|gif|ico|woff|woff2|ttf|eot|json)).)',
     ],
 };
+
+module.exports = { middleware, config };
