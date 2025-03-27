@@ -36,7 +36,7 @@ export default function Page() {
 
 
 	return (
-		<div className="h-screen w-full overflow-hidden">
+		<div className="h-screen w-full overflow-hidden mt-[-15px]">
 		  {error ? (
 			<div className="flex h-screen items-center justify-center">
 			  <h1 className="text-3xl font-bold text-red-500">

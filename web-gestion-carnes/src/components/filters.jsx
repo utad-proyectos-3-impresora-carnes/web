@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronUp } from "@deemlol/next-icons";
+import { ChevronDown } from "@deemlol/next-icons";
 import { useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function FilterSidebar() {
   const [openSections, setOpenSections] = useState({
@@ -18,20 +19,23 @@ export default function FilterSidebar() {
   useEffect(() => {
     const fetchTitulaciones = async () => {
       try {
-        const token = localStorage.getItem("token"); 
+        const token = localStorage.getItem("token");
         if (!token) {
           console.error("No hay token en localStorage");
-          router.push("/"); // Redirige al login si no hay token
+          router.push("/");
           return;
         }
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/group`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/group`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Error al obtener titulaciones");
@@ -41,7 +45,7 @@ export default function FilterSidebar() {
         setTitulaciones(data);
       } catch (error) {
         console.error(error);
-        router.push("/dashboard"); // Redirige en caso de error
+        router.push("/dashboard");
       } finally {
         setLoading(false);
       }
@@ -57,76 +61,107 @@ export default function FilterSidebar() {
     }));
   };
 
+  const dropdownAnimation = {
+    initial: { opacity: 0, height: 0 },
+    animate: { opacity: 1, height: "auto" },
+    exit: { opacity: 0, height: 0 },
+    transition: { duration: 0.3, ease: "easeInOut" },
+  };
+
+  const sectionWrapperStyle =
+    "bg-[#101426] text-white border border-white rounded-md overflow-hidden";
+
+  const sectionButtonStyle =
+    "w-full flex justify-between items-center px-4 py-4 text-base font-medium";
+
+  const chevronStyle = (open) =>
+    `w-5 h-5 transition-transform duration-300 ${open ? "rotate-180" : ""}`;
+
+  const labelStyle = "flex items-center space-x-3 py-2 pl-5 text-[15px] text-white";
+
+  const checkboxStyle = "w-5 h-5 accent-blue-500";
+
   return (
-    <div className="w-64 bg-gray-900 text-white p-4 fixed top-16 left-0 bottom-0 overflow-y-auto">
-      {/* TITULACIÓN */}
-      <div className="mb-4">
-        <button
-          onClick={() => toggleSection("titulacion")}
-          className="w-full flex justify-between items-center bg-gray-800 p-3 rounded-md"
-        >
-          Titulación
-          {openSections.titulacion ? <ChevronUp /> : <ChevronDown />}
-        </button>
+    <div className="w-64 text-white px-0 py-5 fixed top-16 left-0 bottom-0 overflow-y-auto ml-[-4px] mt-[-15px]">
+      <div className="flex flex-col">
+        {/* TITULACIÓN */}
+        <div className={sectionWrapperStyle}>
+          <button
+            onClick={() => toggleSection("titulacion")}
+            className={sectionButtonStyle}
+          >
+            Titulación
+            <ChevronDown className={chevronStyle(openSections.titulacion)} />
+          </button>
 
-        {openSections.titulacion && (
-          <div className="mt-2 space-y-2 pl-3">
-            {loading ? (
-              <p>Cargando...</p>
-            ) : (
-              titulaciones.map((group) => (
-                <label key={group.id} className="flex items-center space-x-2">
-                  <input type="checkbox" className="w-5 h-5 accent-blue-500" />
-                  <span className="text-white">{group.name}</span>
-                </label>
-              ))
+          <AnimatePresence initial={false}>
+            {openSections.titulacion && (
+              <motion.div {...dropdownAnimation} className="pb-4">
+                {loading ? (
+                  <p className="text-gray-400 pl-5 text-sm">Cargando...</p>
+                ) : (
+                  titulaciones.map((group) => (
+                    <label
+                      key={group.id || group._id || group.name}
+                      className={labelStyle}
+                    >
+                      <input type="checkbox" className={checkboxStyle} />
+                      <span>{group.name}</span>
+                    </label>
+                  ))
+                )}
+              </motion.div>
             )}
-          </div>
-        )}
-      </div>
+          </AnimatePresence>
+        </div>
 
-      {/* ESTADO */}
-      <div className="mb-4">
-        <button
-          onClick={() => toggleSection("estado")}
-          className="w-full flex justify-between items-center bg-gray-800 p-3 rounded-md"
-        >
-          Estado
-          {openSections.estado ? <ChevronUp /> : <ChevronDown />}
-        </button>
+        {/* ESTADO */}
+        <div className={sectionWrapperStyle}>
+          <button
+            onClick={() => toggleSection("estado")}
+            className={sectionButtonStyle}
+          >
+            Estado
+            <ChevronDown className={chevronStyle(openSections.estado)} />
+          </button>
 
-        {openSections.estado && (
-          <div className="mt-2 space-y-2 pl-3">
-            {["NO VALIDO", "PARA IMPRIMIR", "IMPRESO"].map((estado) => (
-              <label key={estado} className="flex items-center space-x-2">
-                <input type="checkbox" className="w-5 h-5 accent-blue-500" />
-                <span className="text-white">{estado}</span>
-              </label>
-            ))}
-          </div>
-        )}
-      </div>
+          <AnimatePresence initial={false}>
+            {openSections.estado && (
+              <motion.div {...dropdownAnimation} className="pb-4">
+                {["NO VALIDO", "PARA IMPRIMIR", "IMPRESO"].map((estado) => (
+                  <label key={estado} className={labelStyle}>
+                    <input type="checkbox" className={checkboxStyle} />
+                    <span>{estado}</span>
+                  </label>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
-      {/* AÑO ACADÉMICO */}
-      <div className="mb-4">
-        <button
-          onClick={() => toggleSection("anioAcademico")}
-          className="w-full flex justify-between items-center bg-gray-800 p-3 rounded-md"
-        >
-          Año Académico
-          {openSections.anioAcademico ? <ChevronUp /> : <ChevronDown />}
-        </button>
+        {/* AÑO ACADÉMICO */}
+        <div className={sectionWrapperStyle}>
+          <button
+            onClick={() => toggleSection("anioAcademico")}
+            className={sectionButtonStyle}
+          >
+            Año Académico
+            <ChevronDown className={chevronStyle(openSections.anioAcademico)} />
+          </button>
 
-        {openSections.anioAcademico && (
-          <div className="mt-2 space-y-2 pl-3">
-            {["2022-2023", "2023-2024", "2024-2025"].map((anio) => (
-              <label key={anio} className="flex items-center space-x-2">
-                <input type="checkbox" className="w-5 h-5 accent-blue-500" />
-                <span className="text-white">{anio}</span>
-              </label>
-            ))}
-          </div>
-        )}
+          <AnimatePresence initial={false}>
+            {openSections.anioAcademico && (
+              <motion.div {...dropdownAnimation} className="pb-4">
+                {["2022-2023", "2023-2024", "2024-2025"].map((anio) => (
+                  <label key={anio} className={labelStyle}>
+                    <input type="checkbox" className={checkboxStyle} />
+                    <span>{anio}</span>
+                  </label>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );
