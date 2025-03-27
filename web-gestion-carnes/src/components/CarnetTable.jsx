@@ -2,12 +2,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  useReactTable,
-  getCoreRowModel,
-  flexRender,
-} from '@tanstack/react-table';
 import { Eye } from '@deemlol/next-icons';
+import { useRowSelect } from '@table-library/react-table-library/select';
 
 export default function CarnetTable({ data, loading }) {
   const router = useRouter();
@@ -31,60 +27,33 @@ export default function CarnetTable({ data, loading }) {
     );
 
     if (observerRef.current) observer.observe(observerRef.current);
-
-    return () => {
-      if (observerRef.current) observer.unobserve(observerRef.current);
-    };
+    return () => observer.disconnect();
   }, [itemsToShow, data.length]);
 
-  const viewCarnet = (id) => {
-    console.log('Ver carnet de', id);
+  const handleViewCarnet = (id) => {
     router.push(`/dashboard/carnet/${id}`);
   };
 
-  const columns = React.useMemo(
-    () => [
-      {
-        accessorKey: 'fullName',
-        header: 'Nombre',
-        cell: (info) => info.getValue(),
-      },
-      {
-        accessorKey: 'dni',
-        header: 'DNI',
-        cell: (info) => info.getValue(),
-      },
-      {
-        accessorKey: 'group.name',
-        header: 'Edad',
-        cell: (info) => info.row.original.group?.name || '',
-      },
-      {
-        id: 'actions',
-        header: () => (
-          <div className="flex items-center justify-end gap-3">
-            <Eye className="w-5 h-5 text-gray-600" />
-            <input type="checkbox" className="w-5 h-5 cursor-pointer" />
-          </div>
-        ),
-        cell: ({ row }) => (
-          <div className="flex items-center justify-end gap-3">
-            <button onClick={() => viewCarnet(row.original._id)}>
-              <Eye className="w-5 h-5 text-gray-600 cursor-pointer" />
-            </button>
-            <input type="checkbox" className="w-5 h-5 cursor-pointer" />
-          </div>
-        ),
-      },
-    ],
-    []
-  );
+  const nodes = visibleData.map((item) => ({
+    id: item._id,
+    fullName: item.fullName,
+    dni: item.dni,
+    ageGroup: item.group?.name || '',
+  }));
 
-  const table = useReactTable({
-    data: visibleData,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
+  const dataTable = { nodes };
+
+  const select = useRowSelect(dataTable, {
+    onChange: () => {},
   });
+
+  const selectedVisibleCount = nodes.filter((n) =>
+    select.state.ids.includes(n.id)
+  ).length;
+
+  const totalSelectedCount = select.state.ids.length;
+  const allVisibleSelected =
+    nodes.length > 0 && selectedVisibleCount === nodes.length;
 
   return (
     <div className="overflow-x-auto">
@@ -94,47 +63,94 @@ export default function CarnetTable({ data, loading }) {
         <>
           <table className="table-auto w-full border-collapse border border-gray-300">
             <thead className="bg-gray-200">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <th
-                      key={header.id}
-                      className="border border-gray-300 px-4 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider"
-                    >
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                    </th>
-                  ))}
-                </tr>
-              ))}
+              <tr>
+                <th className="border border-gray-300 px-4 py-2 text-left text-sm font-semibold text-gray-700 uppercase">
+                  Nombre
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-sm font-semibold text-gray-700 uppercase">
+                  DNI
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-sm font-semibold text-gray-700 uppercase">
+                  Edad
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-right text-sm font-semibold text-gray-700 uppercase">
+                  <div className="flex justify-end items-center gap-3">
+                    <Eye className="w-5 h-5 text-gray-600" />
+                    <input
+                      type="checkbox"
+                      className="w-5 h-5 cursor-pointer"
+                      checked={allVisibleSelected}
+                      onChange={() => select.fns.onToggleAll()}
+                    />
+                  </div>
+                </th>
+              </tr>
             </thead>
-            <tbody>
-              {table.getRowModel().rows.map((row) => (
-                <tr
-                  key={row.id}
-                  className="odd:bg-white even:bg-gray-100 border-b"
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <td
-                      key={cell.id}
-                      className="border border-gray-300 px-4 py-2 text-sm text-gray-800"
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
+
+            {/* Notificación en la parte superior */}
+            {selectedVisibleCount > 0 && (
+              <tbody>
+                <tr>
+                  <td colSpan={4} className="bg-[#0f172a] text-white px-4 py-3 text-sm border-t border-b border-gray-700">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span>
+                        Se han seleccionado{' '}
+                        <span className="font-semibold">{selectedVisibleCount}</span>{' '}
+                        carnets visibles.
+                      </span>
+                      {totalSelectedCount < data.length && (
+                        <button
+                          onClick={() => {
+                            const allIds = data.map((item) => item._id);
+                            select.fns.onAddAll(allIds);
+                          }}
+                          className="text-blue-400 hover:underline ml-2"
+                        >
+                          Seleccionar los {data.length} carnets en Para Imprimir
+                        </button>
                       )}
-                    </td>
-                  ))}
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            )}
+
+            <tbody>
+              {nodes.map((item, index) => (
+                <tr
+                  key={item.id}
+                  className={`border-b ${
+                    index % 2 === 0 ? 'bg-white' : 'bg-gray-100'
+                  }`}
+                >
+                  <td className="border border-gray-300 px-4 py-2 text-sm text-gray-800">
+                    {item.fullName}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 text-sm text-gray-800">
+                    {item.dni}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 text-sm text-gray-800">
+                    {item.ageGroup}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 text-sm text-gray-800">
+                    <div className="flex items-center justify-end gap-3">
+                      <button onClick={() => handleViewCarnet(item.id)}>
+                        <Eye className="w-5 h-5 text-gray-600 cursor-pointer" />
+                      </button>
+                      <input
+                        type="checkbox"
+                        className="w-5 h-5 cursor-pointer"
+                        checked={select.state.ids.includes(item.id)}
+                        onChange={() => select.fns.onToggleById(item.id)}
+                      />
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
 
-          {/* Observador para carga progresiva */}
           <div ref={observerRef} className="h-10" />
-
           {itemsToShow < data.length && (
             <p className="text-center text-sm mt-2 text-gray-500">
               Cargando más carnets...
