@@ -11,7 +11,6 @@ export async function fetchAllMembersData(token: string): Promise<any[]> {
 		{
 			method: "GET",
 		});
-	console.log(data);
 	return data;
 
 }

@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 export default function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [clientMounted, setClientMounted] = useState(false);
-  
+
   useEffect(() => {
     setClientMounted(true);
   }, []);
@@ -24,10 +24,9 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-gray-100 px-6 py-3 shadow-md relative">
-      <div className="flex items-center justify-between">
-        
-        {/* LOGO + BUSCADOR */}
+    <header>
+      <div className="fixed top-0 left-0 right-0 h-16 bg-white shadow-md z-50 px-6 flex items-center justify-between">
+        {/* IZQUIERDA: LOGO + BUSCADOR */}
         <div className="flex items-center gap-6">
           <div className="text-2xl font-bold">LOGO</div>
 
@@ -36,34 +35,38 @@ export default function Header() {
             <input
               type="text"
               placeholder="BUSCADOR"
-              className="outline-none bg-transparent flex-grow"
+              className="outline-none bg-transparent flex-grow text-sm"
             />
           </div>
         </div>
 
-        {/* BOTONES */}
+        {/* DERECHA: BOTONES */}
         <div className="flex items-center gap-3 relative">
-          <button className="flex items-center bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition">
-            IMPRIMIR <Printer className="ml-2 w-5 h-5" />
+          {/* Botón IMPRIMIR */}
+          <button className="flex items-center bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition text-sm">
+            IMPRIMIR
+            <Printer className="ml-2 w-5 h-5" />
           </button>
 
-          {/* BOTÓN DE USUARIO */}
+          {/* Botón USUARIO + Dropdown */}
           <div className="relative">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center border border-gray-400 px-4 py-2 rounded-md hover:bg-gray-200 transition"
+              className="flex items-center border border-gray-400 px-4 py-2 rounded-md hover:bg-gray-200 transition text-sm"
             >
-              Usuario <User className="ml-2 w-5 h-5" />
+              Usuario
+              <User className="ml-2 w-5 h-5" />
             </button>
 
-            {/* DROPDOWN */}
+            {/* Dropdown */}
             {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-40 bg-white shadow-md rounded-md border">
+              <div className="absolute right-0 mt-2 w-40 bg-white shadow-md rounded-md border z-50">
                 <button
                   onClick={handleLogout}
-                  className="flex items-center w-full px-4 py-2 text-red-600 hover:bg-gray-100"
+                  className="flex items-center w-full px-4 py-2 text-red-600 hover:bg-gray-100 text-sm"
                 >
-                  Cerrar sesión <LogOut className="ml-2 w-5 h-5" />
+                  Cerrar sesión
+                  <LogOut className="ml-2 w-5 h-5" />
                 </button>
               </div>
             )}

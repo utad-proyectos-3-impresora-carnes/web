@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import FilterSidebar from "@/components/filters";
-import Table from "@/components/table";
+import CarnetTable from "@/components/CarnetTable";
 import Header from "@/components/header";
 import { useRouter } from "next/navigation";
-import { fetchAllMembersData } from "@/services/member";
+import { fetchAllMembersData, fetchFilteredMembersData } from "@/services/member";
 import { fetchToken } from "@/services/tokenHandler";
 
 export default function Page() {
@@ -27,40 +27,42 @@ export default function Page() {
 
 	const handleApplyFilters = (filters) => {
 		setFilters(filters);
-		// Aquí podrías filtrar `data` según los filtros aplicados
+		fetchFilteredMembersData(fetchToken(), filters).then(res => {
+			setData(res);
+			setLoading(false);
+		}).catch(error => console.error);
 	};
 
 
 
 	return (
-		<div className="h-screen w-full">
-			{error ? (
-				<div className="flex h-screen items-center justify-center">
-					<h1 className="text-3xl font-bold text-red-500">
-						Error al cargar los datos.
-					</h1>
-				</div>
-			) : (
-				<>
-					{/* Header fijo en la parte superior */}
-					<Header />
-
-					{/* Contenedor principal con Sidebar a la izquierda y Tabla a la derecha */}
-					<div className="flex pt-1 h-full">
-						{/* Sidebar de filtros a la izquierda */}
-						<aside className="w-1/4 bg-gray-100 p-4 h-full">
-							<FilterSidebar onApply={handleApplyFilters} />
-						</aside>
-
-						{/* Contenedor de la tabla */}
-						<main className="flex-1 p-6">
-							<Table data={data} loading={loading} />
-						</main>
-					</div>
-				</>
-			)}
+		<div className="h-screen w-full overflow-hidden">
+		  {error ? (
+			<div className="flex h-screen items-center justify-center">
+			  <h1 className="text-3xl font-bold text-red-500">
+				Error al cargar los datos.
+			  </h1>
+			</div>
+		  ) : (
+			<>
+			  <Header />
+	  
+			  <div className="flex pt-16 h-[calc(100vh-4rem)]">
+				{/* Sidebar fijo a la izquierda */}
+				<aside className="w-64">
+				  <FilterSidebar onApply={handleApplyFilters} />
+				</aside>
+	  
+				{/* Contenido scrollable */}
+				<main className="flex-1 overflow-y-auto p-6">
+				  <CarnetTable data={data} loading={loading} />
+				</main>
+			  </div>
+			</>
+		  )}
 		</div>
-	);
+	  );
+	  
 
 }
 

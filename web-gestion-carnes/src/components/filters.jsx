@@ -58,7 +58,7 @@ export default function FilterSidebar() {
   };
 
   return (
-    <div className="w-64 bg-gray-900 text-white p-4 rounded-lg shadow-lg">
+    <div className="w-64 bg-gray-900 text-white p-4 fixed top-16 left-0 bottom-0 overflow-y-auto">
       {/* TITULACIÓN */}
       <div className="mb-4">
         <button
