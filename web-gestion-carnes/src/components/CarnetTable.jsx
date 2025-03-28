@@ -3,7 +3,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Eye } from '@deemlol/next-icons';
-import { useRowSelect } from '@table-library/react-table-library/select';
+import {
+  Table, TableBody, TableCell, TableContainer,
+  TableHead, TableRow, Paper, Checkbox, Button, CircularProgress
+} from '@mui/material';
 
 export default function CarnetTable({ data, loading }) {
   const router = useRouter();
@@ -11,6 +14,7 @@ export default function CarnetTable({ data, loading }) {
 
   const [itemsToShow, setItemsToShow] = useState(30);
   const [visibleData, setVisibleData] = useState([]);
+  const [selectedIds, setSelectedIds] = useState([]);
 
   useEffect(() => {
     setVisibleData(data.slice(0, itemsToShow));
@@ -25,7 +29,6 @@ export default function CarnetTable({ data, loading }) {
       },
       { threshold: 1.0 }
     );
-
     if (observerRef.current) observer.observe(observerRef.current);
     return () => observer.disconnect();
   }, [itemsToShow, data.length]);
@@ -41,123 +44,139 @@ export default function CarnetTable({ data, loading }) {
     ageGroup: item.group?.name || '',
   }));
 
-  const dataTable = { nodes };
-
-  const select = useRowSelect(dataTable, {
-    onChange: () => {},
-  });
-
   const selectedVisibleCount = nodes.filter((n) =>
-    select.state.ids.includes(n.id)
+    selectedIds.includes(n.id)
   ).length;
 
-  const totalSelectedCount = select.state.ids.length;
   const allVisibleSelected =
     nodes.length > 0 && selectedVisibleCount === nodes.length;
 
+  const handleSelectAllVisible = () => {
+    const visibleIds = nodes.map((item) => item.id);
+    const allSelected = visibleIds.every((id) => selectedIds.includes(id));
+    if (allSelected) {
+      setSelectedIds((prev) => prev.filter((id) => !visibleIds.includes(id)));
+    } else {
+      const newSelections = visibleIds.filter((id) => !selectedIds.includes(id));
+      setSelectedIds((prev) => [...prev, ...newSelections]);
+    }
+  };
+
+  const handleToggleId = (id) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  };
+
   return (
-    <div className="overflow-x-auto rounded-xl border border-gray-300 shadow-md">
+    <div className="rounded-xl border border-gray-300 shadow-md overflow-hidden">
       {loading ? (
         <p className="text-center py-4">Cargando...</p>
       ) : (
         <>
-          <table className="table-auto w-full border-collapse px-0 border border-gray-300">
-            <thead className="bg-gray-800 text-white">
-              <tr>
-                <th className="border border-gray-300 px-4 py-2 text-left text-sm font-semibold uppercase">
-                  Nombre
-                </th>
-                <th className="border border-gray-300 px-4 py-2 text-left text-sm font-semibold uppercase">
-                  DNI
-                </th>
-                <th className="border border-gray-300 px-4 py-2 text-left text-sm font-semibold  uppercase">
-                  Edad
-                </th>
-                <th className="border border-gray-300 px-4 py-2 text-right text-sm font-semibold uppercase">
-                  <div className="flex justify-end items-center gap-3">
-                    <Eye className="w-5 h-5" />
-                    <input
-                      type="checkbox"
-                      className="w-5 h-5 cursor-pointer"
-                      checked={allVisibleSelected}
-                      onChange={() => select.fns.onToggleAll()}
-                    />
-                  </div>
-                </th>
-              </tr>
-            </thead>
+          {selectedVisibleCount > 0 && (
+            <div className="bg-[#0f172a] text-white px-4 py-3 text-sm border-b border-gray-700">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span>
+                  Se han seleccionado{' '}
+                  <strong>{selectedVisibleCount}</strong> carnets visibles.
+                </span>
+                {selectedIds.length < data.length && (
+                  <Button
+                    variant="text"
+                    sx={{ color: '#3b82f6', textTransform: 'none' }}
+                    onClick={() => setSelectedIds(data.map((item) => item._id))}
+                  >
+                    Seleccionar los {data.length} carnets en Para Imprimir
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
 
-            {/* Notificación en la parte superior */}
-            {selectedVisibleCount > 0 && (
-              <tbody>
-                <tr>
-                  <td colSpan={4} className="bg-[#0f172a] text-white px-4 py-3 text-sm border-t border-b border-gray-700">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <span>
-                        Se han seleccionado{' '}
-                        <span className="font-semibold">{selectedVisibleCount}</span>{' '}
-                        carnets visibles.
-                      </span>
-                      {totalSelectedCount < data.length && (
-                        <button
-                          onClick={() => {
-                            const allIds = data.map((item) => item._id);
-                            select.fns.onAddAll(allIds);
-                          }}
-                          className="text-blue-400 hover:underline ml-2"
-                        >
-                          Seleccionar los {data.length} carnets en Para Imprimir
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            )}
-
-            <tbody>
-              {nodes.map((item, index) => (
-                <tr
-                  key={item.id}
-                  className={`border-b ${
-                    index % 2 === 0 ? 'bg-white' : 'bg-gray-100'
-                  }`}
-                >
-                  <td className="border border-gray-300 px-4 py-2 text-sm text-gray-800">
-                    {item.fullName}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2 text-sm text-gray-800">
-                    {item.dni}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2 text-sm text-gray-800">
-                    {item.ageGroup}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2 text-sm text-gray-800">
-                    <div className="flex items-center justify-end gap-3">
-                      <button onClick={() => handleViewCarnet(item.id)}>
-                        <Eye className="w-5 h-5 text-gray-600 cursor-pointer" />
-                      </button>
-                      <input
-                        type="checkbox"
-                        className="w-5 h-5 cursor-pointer"
-                        checked={select.state.ids.includes(item.id)}
-                        onChange={() => select.fns.onToggleById(item.id)}
+          <TableContainer sx={{ maxHeight: 'calc(100vh - 200px)' }}>
+            <Table stickyHeader className="min-w-full">
+              <TableHead>
+                <TableRow>
+                  {['Nombre', 'DNI', 'Edad'].map((header) => (
+                    <TableCell
+                      key={header}
+                      sx={{
+                        backgroundColor: '#0f172a',
+                        color: 'white',
+                        fontWeight: 'bold',
+                        position: 'sticky',
+                        top: 0,
+                        zIndex: 1,
+                      }}
+                    >
+                      {header}
+                    </TableCell>
+                  ))}
+                  <TableCell
+                    align="right"
+                    sx={{
+                      backgroundColor: '#0f172a',
+                      color: 'white',
+                      fontWeight: 'bold',
+                      position: 'sticky',
+                      top: 0,
+                      zIndex: 1,
+                    }}
+                  >
+                    <div className="flex justify-end items-center gap-3">
+                      <Eye className="w-5 h-5 text-white" />
+                      <Checkbox
+                        checked={allVisibleSelected}
+                        onChange={handleSelectAllVisible}
+                        sx={{ color: 'white' }}
                       />
                     </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </TableCell>
+                </TableRow>
+              </TableHead>
 
-          <div ref={observerRef} className="h-10" />
-          {itemsToShow < data.length && (
-            <p className="text-center text-sm mt-2 text-gray-500 flex items-center justify-center gap-2">
-              
-              <span className="w-10 h-10">Cargando más carnets...</span>
-            </p>
+              <TableBody>
+                {nodes.map((item, index) => (
+                  <TableRow
+                    key={item.id}
+                    sx={{
+                      backgroundColor: index % 2 === 0 ? '#ffffff' : '#f9fafb'
+                    }}
+                  >
+                    <TableCell>{item.fullName}</TableCell>
+                    <TableCell>{item.dni}</TableCell>
+                    <TableCell>{item.ageGroup}</TableCell>
+                    <TableCell align="right">
+                      <div className="flex items-center justify-end gap-3">
+                        <button onClick={() => handleViewCarnet(item.id)}>
+                          <Eye className="w-5 h-5 text-gray-600 cursor-pointer" />
+                        </button>
+                        <Checkbox
+                          checked={selectedIds.includes(item.id)}
+                          onChange={() => handleToggleId(item.id)}
+                        />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
 
-          )}
+                {itemsToShow < data.length && (
+                  <TableRow>
+                    <TableCell colSpan={4}>
+                      <div
+                        ref={observerRef}
+                        className="flex justify-center items-center gap-2 py-4 text-sm text-gray-500"
+                      >
+                        <CircularProgress size={20} thickness={5} />
+                        Cargando más carnets...
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </>
       )}
     </div>

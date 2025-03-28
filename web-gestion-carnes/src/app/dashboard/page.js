@@ -49,7 +49,7 @@ export default function Page() {
 	  
 			  <div className="flex pt-16 h-[calc(100vh-4rem)] overflow-hidden">
 				{/* Sidebar ya forma parte del flujo */}
-				<aside className="w-64 h-full shrink-0">
+				<aside className="w-64 h-full shrink-0 mt-4">
 					<FilterSidebar onApply={handleApplyFilters} />
 				</aside>
 
