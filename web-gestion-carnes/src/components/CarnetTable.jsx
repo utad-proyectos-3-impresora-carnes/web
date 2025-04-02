@@ -34,8 +34,9 @@ export default function CarnetTable({ data, loading }) {
   }, [itemsToShow, data.length]);
 
   const handleViewCarnet = (id) => {
+    console.log("🔍 Navegando al carnet con ID:", id); // nuevo log
     router.push(`/dashboard/carnet/${id}`);
-  };
+  };  
 
   const nodes = visibleData.map((item) => ({
     id: item._id,

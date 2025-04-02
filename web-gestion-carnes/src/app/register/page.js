@@ -12,37 +12,69 @@ export default function Register() {
   const [error, setError] = useState(null);
   const router = useRouter();
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     setError(null);
-
+  
+    // Validaciones frontend
     if (email !== confirmEmail) {
-      setError('Los correos electrónicos no coinciden.');
+      setError("Los correos electrónicos no coinciden.");
       return;
     }
-
-    const requestBody = JSON.stringify({ email, password, phone });
-    console.log("Datos enviados a la API:", requestBody);
-
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password, phone}),
-    })
-      .then(async (res) => {
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.message || 'Ha ocurrido un error.');
-        }
-
-        localStorage.setItem('token', data.token);
-        router.push('/dashboard');
-      })
-      .catch((error) => {
-        setError(error.message || 'Ha ocurrido un error.');
+  
+    const phoneRegex = /^\+34\d{9}$/;
+    if (!phoneRegex.test(phone)) {
+      setError("El teléfono debe tener el formato +34XXXXXXXXX.");
+      return;
+    }
+  
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, phone }),
       });
-  };
+  
+      const contentType = res.headers.get("content-type");
+  
+      // Si no fue bien la petición
+      if (!res.ok) {
+        let errorMessage = "Ha ocurrido un error al registrarse.";
+  
+        // Si devuelve JSON
+        if (contentType && contentType.includes("application/json")) {
+          const data = await res.json();
+          errorMessage = data.message || errorMessage;
+  
+        // Si devuelve texto plano
+        } else {
+          const text = await res.text();
+  
+          // Personalizar errores conocidos
+          if (text.includes("create a user failed")) {
+            errorMessage = "Ese correo ya está en uso. Prueba con otro.";
+          } else if (text.includes("email is not valid")) {
+            errorMessage = "El formato del correo no es válido.";
+          } else if (text.includes("phone")) {
+            errorMessage = "El teléfono introducido no es válido.";
+          } else {
+            errorMessage = text || errorMessage;
+          }
+        }
+  
+        throw new Error(errorMessage);
+      }
+  
+      // Registro correcto
+      const data = await res.json();
+      localStorage.setItem("token", data.token);
+      router.push("/dashboard");
+  
+    } catch (error) {
+      console.error("Error de registro:", error.message);
+      setError(error.message);
+    }
+  };    
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
