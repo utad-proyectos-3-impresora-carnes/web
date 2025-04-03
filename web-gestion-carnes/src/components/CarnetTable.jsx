@@ -8,6 +8,8 @@ import {
   TableHead, TableRow, Paper, Checkbox, Button, CircularProgress
 } from '@mui/material';
 
+import Loading from '@/components/loading';
+
 export default function CarnetTable({ data, loading }) {
   const router = useRouter();
   const observerRef = useRef();
@@ -15,6 +17,8 @@ export default function CarnetTable({ data, loading }) {
   const [itemsToShow, setItemsToShow] = useState(30);
   const [visibleData, setVisibleData] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
+  const [massSelectMode, setMassSelectMode] = useState(false);
+
 
   useEffect(() => {
     setVisibleData(data.slice(0, itemsToShow));
@@ -38,6 +42,7 @@ export default function CarnetTable({ data, loading }) {
     router.push(`/dashboard/carnet/${id}`);
   };  
 
+
   const nodes = visibleData.map((item) => ({
     id: item._id,
     fullName: item.fullName,
@@ -53,6 +58,8 @@ export default function CarnetTable({ data, loading }) {
     nodes.length > 0 && selectedVisibleCount === nodes.length;
 
   const handleSelectAllVisible = () => {
+    setMassSelectMode(true); // activar modo masivo
+    
     const visibleIds = nodes.map((item) => item.id);
     const allSelected = visibleIds.every((id) => selectedIds.includes(id));
     if (allSelected) {
@@ -62,20 +69,24 @@ export default function CarnetTable({ data, loading }) {
       setSelectedIds((prev) => [...prev, ...newSelections]);
     }
   };
+    
 
   const handleToggleId = (id) => {
+    setMassSelectMode(false); 
+  
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
   };
+  
 
   return (
     <div className="rounded-xl border border-gray-300 shadow-md overflow-hidden">
       {loading ? (
-        <p className="text-center py-4">Cargando...</p>
+        <Loading />
       ) : (
         <>
-          {selectedVisibleCount > 0 && (
+          {massSelectMode && selectedVisibleCount > 0 && (
             <div className="bg-[#0f172a] text-white px-4 py-3 text-sm border-b border-gray-700">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span>
