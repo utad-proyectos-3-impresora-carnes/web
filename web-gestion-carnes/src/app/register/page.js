@@ -78,10 +78,6 @@ export default function Register() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
-      {/* Header con Logo */}
-      <header className="bg-[#0864ec] text-white py-6 px-8 w-full flex justify-between items-center fixed top-0 left-0 right-0 text-2xl shadow-lg">
-        <img src="/LOGO_U.png" alt="Logo U-tad" className="h-10" />
-      </header>
 
       {/* Espaciador para evitar solapamiento con el header */}
       <div className="mt-24"></div>
