@@ -20,7 +20,7 @@ export default function Page() {
 		fetchAllMembersData(fetchToken()).then(res => {
 			setData(res);
 			setLoading(false);
-		}).catch(error => console.error(error));
+		}).catch(error => router.push("/"));
 	}, []);
 
 
