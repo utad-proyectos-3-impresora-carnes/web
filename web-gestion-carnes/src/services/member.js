@@ -5,7 +5,7 @@ import { fetchToken } from "./tokenHandler";
 
 export async function fetchAllMembersData(token) {
 	const data = await callServer(
-		"/api/member",
+		"/api/member/allMembers",
 		token,
 		{
 			method: "GET",
