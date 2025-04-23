@@ -14,6 +14,7 @@ export default function Page() {
 	const [filters, setFilters] = useState({});
 	const [error, setError] = useState(null);
 	const router = useRouter();
+	const [selectedIds, setSelectedIds] = useState([]);
 
 	useEffect(() => {
 		if (typeof window === "undefined") return; // Evita ejecución en el servidor
@@ -36,7 +37,7 @@ export default function Page() {
 
 
 	return (
-		<div className="h-screen w-full overflow-hidden mt-2">
+		<div className="h-screen w-full overflow-hidden">
 		  {error ? (
 			<div className="flex h-screen items-center justify-center">
 			  <h1 className="text-3xl font-bold text-red-500">
@@ -45,17 +46,17 @@ export default function Page() {
 			</div>
 		  ) : (
 			<>
-			  <Header />
+			  <Header selectedIds={selectedIds} />
 	  
 			  <div className="flex pt-16 h-[calc(100vh-4rem)] overflow-hidden">
 				{/* Sidebar */}
-				<aside className="w-64 h-full shrink-0 mt-4">
+				<aside className="w-64 h-full shrink-0 mt-8">
 					<FilterSidebar onApply={handleApplyFilters} />
 				</aside>
 
 				{/* Contenido principal */}
-				<main className="flex-1 overflow-y-auto px-0 mr-[-22px]">
-					<CarnetTable data={data} loading={loading} />
+				<main className="flex-1 overflow-y-auto px-0 mt-1">
+					<CarnetTable data={data} loading={loading} selectedIds={selectedIds} setSelectedIds={setSelectedIds} />
 				</main>
 			
 			</div>

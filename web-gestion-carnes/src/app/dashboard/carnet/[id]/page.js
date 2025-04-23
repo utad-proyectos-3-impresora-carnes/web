@@ -15,31 +15,34 @@ export default function CarnetPage() {
 
     const fetchCarnetImage = async () => {
       try {
-        const token = localStorage.getItem("token"); 
+        const token = localStorage.getItem("token");
         if (!token) {
           console.error("No hay token en localStorage");
-          router.push("/"); 
+          router.push("/");
           return;
         }
 
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/member/preview/${id}`, {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`, 
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
 
         if (!response.ok) {
           throw new Error(`No se pudo cargar la imagen del carnet (Error ${response.status})`);
         }
 
-        const data = await response.json(); // ✅ ahora es JSON
+        const data = await response.json();
         if (!data.preview) throw new Error("La respuesta no contiene imagen.");
-        setImageSrc(data.preview);
+
+        // Construir URL completa de la imagen
+        const fullImageUrl = `${process.env.NEXT_PUBLIC_API_URL}/${data.preview}`;
+        setImageSrc(fullImageUrl);
 
       } catch (error) {
         console.error("Error al obtener la imagen:", error);
-        router.push("/dashboard"); 
+        router.push("/dashboard");
       } finally {
         setLoading(false);
       }
@@ -56,7 +59,6 @@ export default function CarnetPage() {
       <div className="bg-white shadow-md rounded-lg p-6 text-center">
         <h1 className="text-xl font-bold mb-4">Carnet de Usuario</h1>
 
-        {/* IMAGEN DEL CARNET */}
         <Image
           src={imageSrc}
           alt="Carnet de usuario"
@@ -75,5 +77,4 @@ export default function CarnetPage() {
       </button>
     </div>
   );
-  
 }

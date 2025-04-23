@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Search, User, Printer, LogOut } from "@deemlol/next-icons";
 import { useRouter } from "next/navigation";
 
-export default function Header() {
+export default function Header({selectedIds}) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [clientMounted, setClientMounted] = useState(false);
 
@@ -21,6 +21,12 @@ export default function Header() {
     if (router) {
       router.push("/"); // Redirige al login
     }
+  };
+
+  const handlePrint = (selectedIds) => {
+    console.log("Imprimiendo los carnets con IDs:", selectedIds); // nuevo log
+
+    // Implementa la lógica de impresión aquí
   };
 
   return (
@@ -43,7 +49,8 @@ export default function Header() {
         {/* DERECHA: BOTONES */}
         <div className="flex items-center gap-3 relative">
           {/* Botón IMPRIMIR */}
-          <button className="flex items-center bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition text-sm">
+          <button className="flex items-center bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition text-sm" 
+            onClick={() => handlePrint(selectedIds)}>
             IMPRIMIR 
             <Printer className="ml-2 w-5 h-5" />
           </button>

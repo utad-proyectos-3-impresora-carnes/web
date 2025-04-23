@@ -5,20 +5,38 @@ import { useRouter } from 'next/navigation';
 import { Eye } from '@deemlol/next-icons';
 import {
   Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, Paper, Checkbox, Button, CircularProgress
+  TableHead, TableRow, Checkbox, Button, CircularProgress
 } from '@mui/material';
 
 import Loading from '@/components/loading';
 
-export default function CarnetTable({ data, loading }) {
+export default function CarnetTable({ data, loading, selectedIds, setSelectedIds }) {
   const router = useRouter();
   const observerRef = useRef();
 
   const [itemsToShow, setItemsToShow] = useState(30);
   const [visibleData, setVisibleData] = useState([]);
-  const [selectedIds, setSelectedIds] = useState([]);
   const [massSelectMode, setMassSelectMode] = useState(false);
 
+  const compactCellStyle = {
+    paddingTop: '4px',
+    paddingBottom: '4px',
+    paddingLeft: '8px',
+    paddingRight: '16px'
+  };
+
+  const translateValidation = (state) => {
+    switch (state) {
+      case 'to_validate':
+        return 'POR VALIDAR';
+      case 'validated':
+        return 'VALIDADO';
+      case 'rejected':
+        return 'NO VÁLIDO';
+      default:
+        return 'DESCONOCIDO';
+    }
+  };
 
   useEffect(() => {
     setVisibleData(data.slice(0, itemsToShow));
@@ -38,28 +56,25 @@ export default function CarnetTable({ data, loading }) {
   }, [itemsToShow, data.length]);
 
   const handleViewCarnet = (id) => {
-    console.log("🔍 Navegando al carnet con ID:", id); // nuevo log
     router.push(`/dashboard/carnet/${id}`);
-  };  
-
+  };
 
   const nodes = visibleData.map((item) => ({
     id: item._id,
     fullName: item.fullName,
     dni: item.dni,
     ageGroup: item.group?.name || '',
+    validationState: translateValidation(item.validationState)
   }));
 
   const selectedVisibleCount = nodes.filter((n) =>
     selectedIds.includes(n.id)
   ).length;
 
-  const allVisibleSelected =
-    nodes.length > 0 && selectedVisibleCount === nodes.length;
+  const allVisibleSelected = visibleData.length > 0 && selectedVisibleCount === visibleData.length;
 
   const handleSelectAllVisible = () => {
-    setMassSelectMode(true); // activar modo masivo
-    
+    setMassSelectMode(true);
     const visibleIds = nodes.map((item) => item.id);
     const allSelected = visibleIds.every((id) => selectedIds.includes(id));
     if (allSelected) {
@@ -69,16 +84,13 @@ export default function CarnetTable({ data, loading }) {
       setSelectedIds((prev) => [...prev, ...newSelections]);
     }
   };
-    
 
   const handleToggleId = (id) => {
-    setMassSelectMode(false); 
-  
+    setMassSelectMode(false);
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
   };
-  
 
   return (
     <div className="rounded-xl border border-gray-300 shadow-md overflow-hidden">
@@ -90,14 +102,16 @@ export default function CarnetTable({ data, loading }) {
             <div className="bg-[#0f172a] text-white px-4 py-3 text-sm border-b border-gray-700">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span>
-                  Se han seleccionado{' '}
-                  <strong>{selectedVisibleCount}</strong> carnets visibles.
+                  Se han seleccionado <strong>{selectedVisibleCount}</strong> carnets visibles.
                 </span>
                 {selectedIds.length < data.length && (
                   <Button
                     variant="text"
                     sx={{ color: '#3b82f6', textTransform: 'none' }}
-                    onClick={() => setSelectedIds(data.map((item) => item._id))}
+                    onClick={() => {
+                      const allIds = data.map((item) => item._id);
+                      setSelectedIds((prev) => Array.from(new Set([...prev, ...allIds])));
+                    }}
                   >
                     Seleccionar los {data.length} carnets en Para Imprimir
                   </Button>
@@ -106,11 +120,11 @@ export default function CarnetTable({ data, loading }) {
             </div>
           )}
 
-          <TableContainer sx={{ maxHeight: 'calc(100vh - 200px)' }}>
+          <TableContainer sx={{ maxHeight: 'calc(100vh - 135px)' }}>
             <Table stickyHeader className="min-w-full">
               <TableHead>
                 <TableRow>
-                  {['Nombre', 'DNI', 'Edad'].map((header) => (
+                  {['Nombre', 'DNI', 'Edad', 'Estado'].map((header) => (
                     <TableCell
                       key={header}
                       sx={{
@@ -139,15 +153,15 @@ export default function CarnetTable({ data, loading }) {
                     <div className="flex justify-end items-center gap-3">
                       <Eye className="w-5 h-5 text-white" />
                       <Checkbox
+                        size="small"
+                        sx={{ color: 'white', p: '4px' }}
                         checked={allVisibleSelected}
                         onChange={handleSelectAllVisible}
-                        sx={{ color: 'white' }}
                       />
                     </div>
                   </TableCell>
                 </TableRow>
               </TableHead>
-
               <TableBody>
                 {nodes.map((item, index) => (
                   <TableRow
@@ -156,15 +170,18 @@ export default function CarnetTable({ data, loading }) {
                       backgroundColor: index % 2 === 0 ? '#ffffff' : '#f9fafb'
                     }}
                   >
-                    <TableCell>{item.fullName}</TableCell>
-                    <TableCell>{item.dni}</TableCell>
-                    <TableCell>{item.ageGroup}</TableCell>
-                    <TableCell align="right">
+                    <TableCell sx={compactCellStyle}>{item.fullName}</TableCell>
+                    <TableCell sx={compactCellStyle}>{item.dni}</TableCell>
+                    <TableCell sx={compactCellStyle}>{item.ageGroup}</TableCell>
+                    <TableCell sx={compactCellStyle}>{item.validationState}</TableCell>
+                    <TableCell sx={compactCellStyle} align="right">
                       <div className="flex items-center justify-end gap-3">
                         <button onClick={() => handleViewCarnet(item.id)}>
                           <Eye className="w-5 h-5 text-gray-600 cursor-pointer" />
                         </button>
                         <Checkbox
+                          size="small"
+                          sx={{ p: '4px' }}
                           checked={selectedIds.includes(item.id)}
                           onChange={() => handleToggleId(item.id)}
                         />
@@ -172,10 +189,9 @@ export default function CarnetTable({ data, loading }) {
                     </TableCell>
                   </TableRow>
                 ))}
-
                 {itemsToShow < data.length && (
                   <TableRow>
-                    <TableCell colSpan={4}>
+                    <TableCell colSpan={5}>
                       <div
                         ref={observerRef}
                         className="flex justify-center items-center gap-2 py-4 text-sm text-gray-500"
