@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { Search, User, Printer, LogOut } from "@deemlol/next-icons";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
-export default function Header({selectedIds}) {
+export default function Header({ selectedIds }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [clientMounted, setClientMounted] = useState(false);
 
@@ -24,24 +25,31 @@ export default function Header({selectedIds}) {
   };
 
   const handlePrint = (selectedIds) => {
-    console.log("Imprimiendo los carnets con IDs:", selectedIds); // nuevo log
-
+    console.log("Imprimiendo los carnets con IDs:", selectedIds);
     // Implementa la lógica de impresión aquí
   };
 
   return (
     <header>
-      <div className="fixed top-0 left-0 right-0 h-16 bg-white shadow-md z-50 px-6 flex items-center justify-between">
+      <div className="fixed top-0 left-0 right-0 h-16 bg-[#0864ec] shadow-md z-50 px-6 flex items-center justify-between text-white">
         {/* IZQUIERDA: LOGO + BUSCADOR */}
         <div className="flex items-center gap-6">
-          <div className="text-2xl font-bold">LOGO</div>
+          <div className="w-28 h-auto">
+            <Image
+              src="/LOGO_U.png"
+              alt="Logo"
+              width={50}
+              height={20}
+              priority
+            />
+          </div>
 
-          <div className="flex items-center border-b border-gray-400 px-2 w-64">
-            <Search className="text-gray-500 mr-2 w-5 h-5" />
+          <div className="flex items-center border-b border-white px-2 w-64">
+            <Search className="text-white mr-2 w-5 h-5" />
             <input
               type="text"
               placeholder="BUSCADOR"
-              className="outline-none bg-transparent flex-grow text-sm"
+              className="outline-none bg-transparent flex-grow text-sm text-white placeholder-white"
             />
           </div>
         </div>
@@ -49,9 +57,11 @@ export default function Header({selectedIds}) {
         {/* DERECHA: BOTONES */}
         <div className="flex items-center gap-3 relative">
           {/* Botón IMPRIMIR */}
-          <button className="flex items-center bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition text-sm" 
-            onClick={() => handlePrint(selectedIds)}>
-            IMPRIMIR 
+          <button
+            className="flex items-center bg-white text-[#0864ec] px-4 py-2 rounded-md hover:bg-gray-100 transition text-sm font-semibold"
+            onClick={() => handlePrint(selectedIds)}
+          >
+            IMPRIMIR
             <Printer className="ml-2 w-5 h-5" />
           </button>
 
@@ -59,7 +69,7 @@ export default function Header({selectedIds}) {
           <div className="relative">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center border border-gray-400 px-4 py-2 rounded-md hover:bg-gray-200 transition text-sm"
+              className="flex items-center bg-white text-[#0864ec] px-4 py-2 rounded-md hover:bg-gray-100 transition text-sm font-semibold"
             >
               Usuario
               <User className="ml-2 w-5 h-5" />
