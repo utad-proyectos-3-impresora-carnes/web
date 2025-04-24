@@ -93,7 +93,7 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
   };
 
   return (
-    <div className="rounded-xl border border-gray-300 shadow-md overflow-hidden">
+    <div className="h-full rounded-xl border border-gray-300 shadow-md overflow-hidden">
       {loading ? (
         <Loading />
       ) : (
@@ -120,8 +120,18 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
             </div>
           )}
 
-          <TableContainer sx={{ maxHeight: 'calc(100vh - 135px)' }}>
-            <Table stickyHeader className="min-w-full">
+          <TableContainer
+            className="h-full overflow-auto"
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              height: '100%',
+              maxHeight: '100%',
+              flexGrow: 1,
+              overflowY: 'auto',
+            }}
+          >
+            <Table stickyHeader className="min-w-full" sx={{ flex: '1 1 auto' }}>
               <TableHead>
                 <TableRow>
                   {['Nombre', 'DNI', 'Edad', 'Estado'].map((header) => (
@@ -173,10 +183,21 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
                     <TableCell sx={compactCellStyle}>{item.fullName}</TableCell>
                     <TableCell sx={compactCellStyle}>{item.dni}</TableCell>
                     <TableCell sx={compactCellStyle}>{item.ageGroup}</TableCell>
-                    <TableCell sx={compactCellStyle}>{item.validationState}</TableCell>
+                    <TableCell sx={compactCellStyle}>
+                      <span
+                        className={`
+                          px-2 py-0.5 rounded-sm font-medium
+                          ${item.validationState === 'VALIDADO' ? 'bg-[#73c66c]/40 text-[#356f30]' : ''}
+                          ${item.validationState === 'NO VÁLIDO' ? 'bg-[#e66c6c]/40 text-[#852d2d]' : ''}
+                          ${item.validationState === 'POR VALIDAR' ? 'bg-[#ebd758]/40 text-[#8a7b22]' : ''}
+                        `}
+                      >
+                        {item.validationState}
+                      </span>
+                    </TableCell>
                     <TableCell sx={compactCellStyle} align="right">
                       <div className="flex items-center justify-end gap-3">
-                        <button onClick={() => handleViewCarnet(item.id)}>
+                        <button title="Ver carnet" onClick={() => handleViewCarnet(item.id)}>
                           <Eye className="w-5 h-5 text-gray-600 cursor-pointer" />
                         </button>
                         <Checkbox
