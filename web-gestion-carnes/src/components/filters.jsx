@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ChevronDown } from "@deemlol/next-icons";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
+import { getAllGroups } from "@/services/group";
 
 export default function FilterSidebar() {
 	const [openSections, setOpenSections] = useState({
@@ -19,30 +20,8 @@ export default function FilterSidebar() {
 	useEffect(() => {
 		const fetchTitulaciones = async () => {
 			try {
-				const token = localStorage.getItem("token");
-				if (!token) {
-					console.error("No hay token en localStorage");
-					router.push("/");
-					return;
-				}
 
-				const response = await fetch(
-					`${process.env.NEXT_PUBLIC_API_URL}/api/group/allGroups`,
-					{
-						method: "GET",
-						headers: {
-							Authorization: `Bearer ${token}`,
-							"Content-Type": "application/json",
-						},
-					}
-				);
-
-				if (!response.ok) {
-					throw new Error("Error al obtener titulaciones");
-				}
-
-				const data = await response.json();
-				setTitulaciones(data);
+				setTitulaciones(await getAllGroups());
 			} catch (error) {
 				console.error(error);
 				router.push("/dashboard");
