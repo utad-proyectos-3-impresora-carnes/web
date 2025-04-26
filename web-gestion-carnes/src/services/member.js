@@ -71,3 +71,79 @@ export async function getFilteredMembers(filters) {
 		throw new Error("Error al obtener los miembros filtrados.");
 	}
 }
+
+/**
+ * Obtiene el link a la imagen de la previsualización del miembro.
+ * @param {string} memberId El id del miembro.
+ * @returns El link a la imagen de la previsualización del miembro.
+ */
+export async function getCardPreview(memberId) {
+
+	try {
+
+		return await callServer(
+			`/api/member/preview/${memberId}`,
+			getAuthToken(),
+			{
+				method: "GET"
+			}
+		);
+
+
+	} catch (error) {
+		console.error(error);
+		throw new Error("Error al obtener la previsualización de un miembro.");
+	}
+}
+
+/**
+ * Ediat el estado de validación de un miembro.
+ * @param {string} memberId El id del miembro.
+ * @param {string} validationState El estado de validación.
+ * @returns El miembro editado.
+ */
+export async function editMemberValidatioStatus(memberId, validationState) {
+
+	try {
+
+		return await callServer(
+			`/api/member/editMemberValidatioStatus/${memberId}`,
+			getAuthToken(),
+			{
+				method: "PATCH",
+				body: JSON.stringify({ validationState: validationState })
+			}
+		);
+
+
+	} catch (error) {
+		console.error(error);
+		throw new Error("Error al editar el estado de validación de un miembro.");
+	}
+}
+
+/**
+ * Manda a imprimri una serie de miembros.
+ * @param {Array<String>} members Los ids de los miembros a imprimir.
+ * @returns Un aviso de si los miembros se pusieron a la cola de imprimir.
+ */
+export async function printMembers(members) {
+
+	try {
+
+		return await callServer(
+			`/api/member/printMembers`,
+			getAuthToken(),
+			{
+				method: "PATCH",
+				body: JSON.stringify(members)
+			}
+		);
+
+
+	} catch (error) {
+		console.error(error);
+		throw new Error("Error al manda a imprimir miembros");
+	}
+
+}
