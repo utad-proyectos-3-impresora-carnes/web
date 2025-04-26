@@ -10,6 +10,7 @@ export default function FilterSidebar() {
 		titulacion: false,
 		estado: false,
 		anioAcademico: false,
+		impreso: false,
 	});
 
 	const [titulaciones, setTitulaciones] = useState([]);
@@ -128,7 +129,7 @@ export default function FilterSidebar() {
 					<AnimatePresence initial={false}>
 						{openSections.estado && (
 							<motion.div {...dropdownAnimation} className="pb-4">
-								{["NO VALIDO", "PARA IMPRIMIR", "IMPRESO"].map((estado) => (
+								{["NO VÁLIDO", "PARA IMPRIMIR", "VALIDADO"].map((estado) => (
 									<label key={estado} className={labelStyle}>
 										<input type="checkbox" className={checkboxStyle} />
 										<span>{estado}</span>
@@ -152,10 +153,34 @@ export default function FilterSidebar() {
 					<AnimatePresence initial={false}>
 						{openSections.anioAcademico && (
 							<motion.div {...dropdownAnimation} className="pb-4">
-								{["2022-2023", "2023-2024", "2024-2025"].map((anio) => (
+								{["2022", "2023", "2024"].map((anio) => (
 									<label key={anio} className={labelStyle}>
 										<input type="checkbox" className={checkboxStyle} />
 										<span>{anio}</span>
+									</label>
+								))}
+							</motion.div>
+						)}
+					</AnimatePresence>
+				</div>
+
+				{/* IMPRESO */}
+				<div className={sectionWrapperStyle}>
+					<button
+						onClick={() => toggleSection("impreso")}
+						className={sectionButtonStyle}
+					>
+						Impreso
+						<ChevronDown className={chevronStyle(openSections.impreso)} />
+					</button>
+
+					<AnimatePresence initial={false}>
+						{openSections.impreso && (
+							<motion.div {...dropdownAnimation} className="pb-4">
+								{["Sí", "No"].map((valor) => (
+									<label key={valor} className={labelStyle}>
+										<input type="checkbox" className={checkboxStyle} />
+										<span>{valor}</span>
 									</label>
 								))}
 							</motion.div>

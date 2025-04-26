@@ -26,17 +26,26 @@ export default function CarnetPage() {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
-          },
+            "Content-Type": "application/json"
+          }
         });
 
         if (!response.ok) {
+          if (response.status === 401) {
+            console.error("No autorizado. Redirigiendo...");
+            router.push("/");
+            return;
+          }
           throw new Error(`No se pudo cargar la imagen del carnet (Error ${response.status})`);
         }
 
         const data = await response.json();
-        if (!data.preview) throw new Error("La respuesta no contiene imagen.");
+        if (!data.preview) {
+          console.error("No se recibió imagen.");
+          router.push("/dashboard");
+          return;
+        }
 
-        // Construir URL completa de la imagen
         const fullImageUrl = `${process.env.NEXT_PUBLIC_API_URL}/${data.preview}`;
         setImageSrc(fullImageUrl);
 

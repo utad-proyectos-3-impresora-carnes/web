@@ -63,8 +63,10 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
     id: item._id,
     fullName: item.fullName,
     dni: item.dni,
-    ageGroup: item.group?.name || '',
-    validationState: translateValidation(item.validationState)
+    titulacion: item.group?.name || '',
+    validationState: translateValidation(item.validationState),
+    year: item.year || '—',
+    printed: item.printed ?? false
   }));
 
   const selectedVisibleCount = nodes.filter((n) =>
@@ -134,7 +136,7 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
             <Table stickyHeader className="min-w-full" sx={{ flex: '1 1 auto' }}>
               <TableHead>
                 <TableRow>
-                  {['Nombre', 'DNI', 'Edad', 'Estado'].map((header) => (
+                  {['Nombre', 'DNI', 'Titulación', 'Año', 'Estado', 'Impreso'].map((header) => (
                     <TableCell
                       key={header}
                       sx={{
@@ -160,18 +162,11 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
                       zIndex: 1,
                     }}
                   >
-                    <div className="flex justify-end items-center gap-3">
-                      <Eye className="w-5 h-5 text-white" />
-                      <Checkbox
-                        size="small"
-                        sx={{ color: 'white', p: '4px' }}
-                        checked={allVisibleSelected}
-                        onChange={handleSelectAllVisible}
-                      />
-                    </div>
+                    Visualizar carnet
                   </TableCell>
                 </TableRow>
               </TableHead>
+
               <TableBody>
                 {nodes.map((item, index) => (
                   <TableRow
@@ -182,7 +177,8 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
                   >
                     <TableCell sx={compactCellStyle}>{item.fullName}</TableCell>
                     <TableCell sx={compactCellStyle}>{item.dni}</TableCell>
-                    <TableCell sx={compactCellStyle}>{item.ageGroup}</TableCell>
+                    <TableCell sx={compactCellStyle}>{item.titulacion}</TableCell>
+                    <TableCell sx={compactCellStyle}>{item.year}</TableCell>
                     <TableCell sx={compactCellStyle}>
                       <span
                         className={`
@@ -193,6 +189,16 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
                         `}
                       >
                         {item.validationState}
+                      </span>
+                    </TableCell>
+                    <TableCell sx={compactCellStyle}>
+                      <span
+                        className={`
+                          px-2 py-0.5 rounded-sm font-medium
+                          ${item.printed ? 'bg-[#73c66c]/40 text-[#356f30]' : 'bg-[#e66c6c]/40 text-[#852d2d]'}
+                        `}
+                      >
+                        {item.printed ? 'Sí' : 'No'}
                       </span>
                     </TableCell>
                     <TableCell sx={compactCellStyle} align="right">
@@ -212,7 +218,7 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
                 ))}
                 {itemsToShow < data.length && (
                   <TableRow>
-                    <TableCell colSpan={5}>
+                    <TableCell colSpan={7}>
                       <div
                         ref={observerRef}
                         className="flex justify-center items-center gap-2 py-4 text-sm text-gray-500"
