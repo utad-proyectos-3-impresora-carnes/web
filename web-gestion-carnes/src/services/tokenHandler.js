@@ -7,7 +7,7 @@ import { cookies } from 'next/headers'
  * Obtiene el token del usuario.
  * @returns El token del usuario.
  */
-export async function fetchToken() {
+export async function getAuthToken() {
 	const cookieStore = await cookies();
 	const userToken = cookieStore.get('userToken')?.value;
 	return userToken;
@@ -17,7 +17,7 @@ export async function fetchToken() {
  * Sets the user token.
  * @param {string} token The user token
  */
-export async function setToken(token) {
+export async function setAuthToken(token) {
 	const cookieStore = await cookies();
 	cookieStore.set("userToken", token);
 }
