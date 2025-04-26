@@ -51,7 +51,7 @@ export async function getAllGroups() {
  * Obtiene los grupos que pase el filtro.
  * @returns Los grupos filtrados.
  */
-export async function getAllGroups(filters) {
+export async function getFilteredGroups(filters) {
 
 	try {
 

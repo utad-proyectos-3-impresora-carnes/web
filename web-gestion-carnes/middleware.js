@@ -1,6 +1,5 @@
 const { NextResponse } = require('next/server');
 const { auth } = require('./src/services/auth'); // Importa la función auth
-const { getAuthToken } = require('@/services/tokenHandler');
 
 const PUBLIC_URLS = ['/', '/register'];
 
@@ -9,31 +8,22 @@ function isPublicUrl(targetUrl) {
 }
 
 async function middleware(request) {
-	console.log("Middleware ejecutándose en:", request.nextUrl.pathname);
 
-	const pathname = request.nextUrl.pathname;
-	const token = await getAuthToken();
-
-	// Si la URL es pública, permite el acceso sin hacer chequeo de autenticación
-	if (isPublicUrl(pathname)) {
-		return NextResponse.next();
-	}
-
-	// Si no tiene token, redirige a una página pública
-	if (!token) {
-		return NextResponse.redirect(new URL('/', request.nextUrl.origin));
-	}
-
-	// Llama a la función auth y permite el acceso si el token es válido
 	try {
-		const isAuthenticated = await auth();
-		if (!isAuthenticated) {
-			return NextResponse.redirect(new URL('/', request.nextUrl.origin));
+
+		const pathname = request.nextUrl.pathname;
+
+		if (!isPublicUrl(pathname)) {
+			await auth();
 		}
-		return NextResponse.next(); // Permite que el usuario se quede en la página actual si ya tiene un token válido
+
+		return NextResponse.next();
+
 	} catch (error) {
+
 		console.error('Error en autenticación:', error);
 		return NextResponse.redirect(new URL('/', request.nextUrl.origin));
+
 	}
 }
 

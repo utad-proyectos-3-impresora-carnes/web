@@ -1,18 +1,19 @@
-import callServer from "./callServer";
-import { getAuthToken } from "./tokenHandler";
+import { getUserByToken } from "./user";
 
+/**
+ * Checks if token is valid
+ * @returns True if token is valid, error if not.
+ */
 export async function auth() {
-	const token = await getAuthToken();
-	if (!token) return false;
 
 	try {
-		const user = await callServer("/api/user/getUserByToken", token, { method: "GET" });
-		return true;
-	} catch (error) {
-		if (Response.status === 500) {
-			throw new Error("Error interno del servidor.");
-		}
 
-		return false;
+		await getUserByToken();
+		return true;
+
+	} catch (error) {
+
+		throw (error);
+
 	}
 }

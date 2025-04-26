@@ -21,3 +21,11 @@ export async function setAuthToken(token) {
 	const cookieStore = await cookies();
 	cookieStore.set("userToken", token);
 }
+
+/**
+ * Deletes the user auth token.
+ */
+export async function deleteAuthToken() {
+	const cookieStore = await cookies();
+	cookieStore.delete("userToken");
+}
