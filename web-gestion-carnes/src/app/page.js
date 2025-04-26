@@ -18,14 +18,16 @@ export default function Login() {
 
 	useEffect(() => {
 		const check = async () => {
-			const isValid = await auth();
-			if (isValid) {
+			try {
+				await auth();
 				setCheckingAuth(false);
 				router.push('/dashboard');
-			} else {
+			} catch (error) {
 				setCheckingAuth(false);
+
 			}
-		};
+		}
+
 		check();
 	}, [router]);
 
@@ -48,7 +50,6 @@ export default function Login() {
 		try {
 			const data = await loginUser(email, password);
 			await setAuthToken(data.token);
-			localStorage.setItem('token', data.token);
 			router.push('/dashboard');
 		} catch (error) {
 			setError(error.message || 'Ha ocurrido un error.');
