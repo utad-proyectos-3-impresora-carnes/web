@@ -51,7 +51,7 @@ export async function getAllGroups() {
  * Obtiene los grupos que pase el filtro.
  * @returns Los grupos filtrados.
  */
-export async function getAllGroups(filter) {
+export async function getAllGroups(filters) {
 
 	try {
 
@@ -60,7 +60,7 @@ export async function getAllGroups(filter) {
 			getAuthToken(),
 			{
 				method: "GET",
-				body: JSON.stringify(filter)
+				body: JSON.stringify(filters)
 			}
 		);
 
