@@ -21,8 +21,6 @@ async function middleware(request) {
 
 	} catch (error) {
 
-		console.log("PROCESNADO ERROR!")
-		console.error('Error en autenticación:', error);
 		return NextResponse.redirect(new URL('/', request.nextUrl.origin));
 
 	}
