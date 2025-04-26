@@ -13,7 +13,7 @@ export async function getGroupMetadata() {
 
 		return await callServer(
 			"/api/member/metadata",
-			getAuthToken(),
+			await getAuthToken(),
 			{
 				method: "GET"
 			}
@@ -35,7 +35,7 @@ export async function getAllMembers() {
 
 		return await callServer(
 			"/api/member/allMembers",
-			getAuthToken(),
+			await getAuthToken(),
 			{
 				method: "GET"
 			}
@@ -58,7 +58,7 @@ export async function getFilteredMembers(filters) {
 
 		return await callServer(
 			"/api/member/filtered",
-			getAuthToken(),
+			await getAuthToken(),
 			{
 				method: "GET",
 				body: JSON.stringify(filters)
@@ -83,7 +83,7 @@ export async function getCardPreview(memberId) {
 
 		return await callServer(
 			`/api/member/preview/${memberId}`,
-			getAuthToken(),
+			await getAuthToken(),
 			{
 				method: "GET"
 			}
@@ -108,7 +108,7 @@ export async function editMemberValidatioStatus(memberId, validationState) {
 
 		return await callServer(
 			`/api/member/editMemberValidatioStatus/${memberId}`,
-			getAuthToken(),
+			await getAuthToken(),
 			{
 				method: "PATCH",
 				body: JSON.stringify({ validationState: validationState })
@@ -133,7 +133,7 @@ export async function printMembers(members) {
 
 		return await callServer(
 			`/api/member/printMembers`,
-			getAuthToken(),
+			await getAuthToken(),
 			{
 				method: "PATCH",
 				body: JSON.stringify(members)

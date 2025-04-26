@@ -13,7 +13,7 @@ export async function getGroupMetadata() {
 
 		return await callServer(
 			"/api/group/metadata",
-			getAuthToken(),
+			await getAuthToken(),
 			{
 				method: "GET"
 			}
@@ -35,7 +35,7 @@ export async function getAllGroups() {
 
 		return await callServer(
 			"/api/group/allGroups",
-			getAuthToken(),
+			await getAuthToken(),
 			{
 				method: "GET"
 			}
@@ -57,7 +57,7 @@ export async function getAllGroups(filters) {
 
 		return await callServer(
 			"/api/group/filtered",
-			getAuthToken(),
+			await getAuthToken(),
 			{
 				method: "GET",
 				body: JSON.stringify(filters)
