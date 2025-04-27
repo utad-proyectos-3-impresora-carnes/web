@@ -166,7 +166,7 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
                   <TableRow
                     key={item.id}
                     sx={{
-                      backgroundColor: index % 2 === 0 ? '#ffffff' : '#f9fafb'
+                      backgroundColor: index % 2 === 0 ? '#ffffff' : '#E5E9EC'
                     }}
                   >
                     <TableCell sx={compactCellStyle}>{item.fullName}</TableCell>
@@ -195,12 +195,22 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
                     </TableCell>
                     <TableCell sx={compactCellStyle} align="right">
                       <div className="flex items-center justify-end gap-3">
-                        <button title="Ver carnet" onClick={() => handleViewCarnet(item.id)}>
-                          <Eye className="w-5 h-5 text-gray-600 cursor-pointer" />
+                      <button
+                          title="Ver carnet"
+                          onClick={() => handleViewCarnet(item.id)}
+                          className="flex items-center justify-center w-6 h-6 rounded-full bg-white hover:scale-110 shadow-lg hover:shadow-lg transition-all duration-300"
+                        >
+                          <Eye className="w-4 h-4 text-blue-600" />
                         </button>
-                        <Checkbox
+
+                        <Checkbox                          
                           size="small"
-                          sx={{ p: '4px' }}
+                          sx={{ p: '4px',
+                            color: '#3b82f6',
+                            '&.Mui-checked': {
+                              color: '#3b82f6',
+                            }
+                           }}
                           checked={selectedIds.includes(item.id)}
                           onChange={() => handleToggleId(item.id)}
                         />
