@@ -10,6 +10,7 @@ import { cookies } from 'next/headers'
 export async function getAuthToken() {
 	const cookieStore = await cookies();
 	const userToken = cookieStore.get('userToken')?.value;
+	console.log("userToken", userToken);
 	return userToken;
 }
 

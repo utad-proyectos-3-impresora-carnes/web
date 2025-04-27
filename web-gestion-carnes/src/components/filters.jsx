@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ChevronDown } from "@deemlol/next-icons";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
+import { getAllGroups, getGroupMetadata } from "@/services/member";
 
 export default function FilterSidebar() {
 	const [openSections, setOpenSections] = useState({
@@ -11,49 +12,81 @@ export default function FilterSidebar() {
 		estado: false,
 		anioAcademico: false,
 		impreso: false,
-	});
+	}, []);
 
 	const [titulaciones, setTitulaciones] = useState([]);
+	const [state, setState] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const router = useRouter();
+	const [selectedYears, setSelectedYears] = useState([]);
+	const [customYear, setCustomYear] = useState("");
+
+	const handleYearCheckbox = (year) => {
+	setSelectedYears((prevSelected) => {
+		if (prevSelected.includes(year)) {
+		return prevSelected.filter((item) => item !== year);
+		} else {
+		return [...prevSelected, year];
+		}
+	});
+	};
+
 
 	useEffect(() => {
 		const fetchTitulaciones = async () => {
-			try {
-				const token = localStorage.getItem("token");
-				if (!token) {
-					console.error("No hay token en localStorage");
-					router.push("/");
-					return;
-				}
-
-				const response = await fetch(
-					`${process.env.NEXT_PUBLIC_API_URL}/api/group/allGroups`,
-					{
-						method: "GET",
-						headers: {
-							Authorization: `Bearer ${token}`,
-							"Content-Type": "application/json",
-						},
-					}
-				);
-
-				if (!response.ok) {
-					throw new Error("Error al obtener titulaciones");
-				}
-
-				const data = await response.json();
-				setTitulaciones(data);
-			} catch (error) {
-				console.error(error);
-				router.push("/dashboard");
+			try{
+				const response = await getAllGroups();
+				if (response) {
+					setTitulaciones(response);
+				} 
+			}
+			catch (error) {
+				console.error("Error fetching titulaciones:", error);
+				router.push("/");
 			} finally {
 				setLoading(false);
 			}
+
 		};
 
 		fetchTitulaciones();
 	}, [router]);
+
+	useEffect(() => {
+
+		const translateValidation = (state) => {
+			switch (state) {
+				case "to_validate":
+					return "POR VALIDAR";
+				case "validated":
+					return "VALIDADO";
+				case "rejected":
+					return "NO VÁLIDO";
+				default:
+					return "DESCONOCIDO";
+			}
+			};
+
+			const fetchMetadata = async () => {
+				try {
+				  const metadata = await getGroupMetadata();
+				  if (metadata && metadata.validationStates) {
+					const translatedStates = metadata.validationStates.map((item) => ({
+					  id: item,  
+					  name: translateValidation(item),
+					}));
+					setState(translatedStates);
+				  }
+				} catch (error) {
+				  console.error("Error fetching metadata:", error);
+				  router.push("/");
+				} finally {
+				  setLoading(false);
+				}
+			  };
+			
+			  fetchMetadata(); 
+		}, [router]);
 
 	const toggleSection = (section) => {
 		setOpenSections((prev) => ({
@@ -129,10 +162,10 @@ export default function FilterSidebar() {
 					<AnimatePresence initial={false}>
 						{openSections.estado && (
 							<motion.div {...dropdownAnimation} className="pb-4">
-								{["NO VÁLIDO", "PARA IMPRIMIR", "VALIDADO"].map((estado) => (
-									<label key={estado} className={labelStyle}>
+								{state.map((estado) => (
+									<label key={estado.id} className={labelStyle}>
 										<input type="checkbox" className={checkboxStyle} />
-										<span>{estado}</span>
+										<span>{estado.name}</span>
 									</label>
 								))}
 							</motion.div>
@@ -140,29 +173,66 @@ export default function FilterSidebar() {
 					</AnimatePresence>
 				</div>
 
-				{/* AÑO ACADÉMICO */}
-				<div className={sectionWrapperStyle}>
-					<button
-						onClick={() => toggleSection("anioAcademico")}
-						className={sectionButtonStyle}
-					>
-						Año Académico
-						<ChevronDown className={chevronStyle(openSections.anioAcademico)} />
-					</button>
+{/* AÑO ACADÉMICO */}
+<div className={sectionWrapperStyle}>
+  <button
+    onClick={() => toggleSection("anioAcademico")}
+    className={sectionButtonStyle}
+  >
+    Año Académico
+    <ChevronDown className={chevronStyle(openSections.anioAcademico)} />
+  </button>
 
-					<AnimatePresence initial={false}>
-						{openSections.anioAcademico && (
-							<motion.div {...dropdownAnimation} className="pb-4">
-								{["2022", "2023", "2024"].map((anio) => (
-									<label key={anio} className={labelStyle}>
-										<input type="checkbox" className={checkboxStyle} />
-										<span>{anio}</span>
-									</label>
-								))}
-							</motion.div>
-						)}
+  <AnimatePresence initial={false}>
+    {openSections.anioAcademico && (
+      <motion.div {...dropdownAnimation} className="pb-4 space-y-2">
+        <label className={labelStyle}>
+          <input
+            type="checkbox"
+            className={checkboxStyle}
+            checked={selectedYears.includes(new Date().getFullYear().toString())}
+            onChange={() => handleYearCheckbox(new Date().getFullYear().toString())}
+          />
+          <span>{new Date().getFullYear()}</span>
+        </label>
+
+        <label className={labelStyle}>
+          <input
+            type="checkbox"
+            className={checkboxStyle}
+            checked={selectedYears.includes("otros")}
+            onChange={() => handleYearCheckbox("otros")}
+          />
+          <span>Otros</span>
+        </label>
+
+					{/* Animación suave del input */}
+					<AnimatePresence>
+					{selectedYears.includes("otros") && (
+						<motion.div
+						initial={{ opacity: 0, height: 0 }}
+						animate={{ opacity: 1, height: "auto" }}
+						exit={{ opacity: 0, height: 0 }}
+						transition={{ duration: 0.3, ease: "easeInOut" }}
+						className="overflow-hidden"
+						>
+						<input
+							type="number"
+							placeholder="Ingrese otro año"
+							className="ml-5 p-2 rounded text-black w-4/5 mt-2"
+							min="1900"
+							max="2100"
+							value={customYear}
+							onChange={(e) => setCustomYear(e.target.value)}
+						/>
+						</motion.div>
+					)}
 					</AnimatePresence>
-				</div>
+				</motion.div>
+				)}
+			</AnimatePresence>
+			</div>
+
 
 				{/* IMPRESO */}
 				<div className={sectionWrapperStyle}>

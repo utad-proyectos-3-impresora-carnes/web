@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
+import { getCardPreview } from "@/services/member";
+import { get } from "http";
 
 export default function CarnetPage() {
   const { id } = useParams();
@@ -10,55 +12,42 @@ export default function CarnetPage() {
   const [imageSrc, setImageSrc] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (!id) return;
 
-    const fetchCarnetImage = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.error("No hay token en localStorage");
-          router.push("/");
-          return;
-        }
+useEffect(() => {
+  if (!id) {
+    router.push("/dashboard");
+    return;
+  }
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/member/preview/${id}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-          }
-        });
+  const fetchCarnetImage = async () => {
+    try {
+      const response = await getCardPreview(id);
+      const previewPath = response?.preview;
 
-        if (!response.ok) {
-          if (response.status === 401) {
-            console.error("No autorizado. Redirigiendo...");
-            router.push("/");
-            return;
-          }
-          throw new Error(`No se pudo cargar la imagen del carnet (Error ${response.status})`);
-        }
+      if (previewPath && typeof previewPath === 'string') {
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
+        const imagePath = previewPath.startsWith("/") ? previewPath : `/${previewPath}`;
+        const fullImageUrl = `${baseUrl}${imagePath}`;
 
-        const data = await response.json();
-        if (!data.preview) {
-          console.error("No se recibió imagen.");
-          router.push("/dashboard");
-          return;
-        }
-
-        const fullImageUrl = `${process.env.NEXT_PUBLIC_API_URL}/${data.preview}`;
         setImageSrc(fullImageUrl);
 
-      } catch (error) {
-        console.error("Error al obtener la imagen:", error);
+        console.log("Full Image URL:", fullImageUrl);
+      } else {
+        console.error("Error: respuesta inesperada al obtener el carnet", response);
         router.push("/dashboard");
-      } finally {
-        setLoading(false);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching carnet image:", error);
+      router.push("/dashboard");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchCarnetImage();
-  }, [id, router]);
+  fetchCarnetImage();
+}, [id, router]);
+
+  
 
   if (loading) return <p>Cargando carnet...</p>;
   if (!imageSrc) return <p>Error cargando el carnet</p>;

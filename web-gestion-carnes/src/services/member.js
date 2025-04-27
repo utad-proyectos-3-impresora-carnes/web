@@ -151,22 +151,20 @@ export async function printMembers(members) {
 /**
  * Obtiene las titulaciones de la base de datos
  */
-
 export async function getAllGroups() {
 
 	try {
 
 		return await callServer(
-			"/api/member/allGroups",
+			"/api/group/allGroups",
 			await getAuthToken(),
 			{
 				method: "GET"
 			}
 		);
 
-
 	} catch (error) {
 		console.error(error);
-		throw new Error("Error al obtener todos los grupos.");
+		throw new Error("Error al obtener todos los miembros.");
 	}
 }
