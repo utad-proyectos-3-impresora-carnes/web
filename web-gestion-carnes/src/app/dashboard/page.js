@@ -6,14 +6,26 @@ import CarnetTable from "@/components/CarnetTable";
 import Header from "@/components/header";
 import { useRouter } from "next/navigation";
 import { getAllMembers, getFilteredMembers } from "@/services/member";
+import { Fullscreen } from "lucide-react";
+
 
 export default function Page() {
 	const [data, setData] = useState([]);
 	const [loading, setLoading] = useState(true);
-	const [filters, setFilters] = useState({});
+	const [filters, setFilters] = useState({
+		fullName: "",
+		dni: "",
+		group: "",
+		year: null,
+		printed: null,
+		validationState: "",
+		limit: null,
+		offset: null,
+	});
 	const [error, setError] = useState(null);
 	const router = useRouter();
 	const [selectedIds, setSelectedIds] = useState([]);
+
 
 	useEffect(() => {
 		if (typeof window === "undefined") return; // Evita ejecución en el servidor

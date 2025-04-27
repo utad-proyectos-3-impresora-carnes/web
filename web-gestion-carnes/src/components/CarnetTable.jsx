@@ -65,7 +65,7 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
     dni: item.dni,
     titulacion: item.group?.name || '',
     validationState: translateValidation(item.validationState),
-    year: item.year || '—',
+    year: item.creationYear || '—',
     printed: item.printed ?? false
   }));
 
