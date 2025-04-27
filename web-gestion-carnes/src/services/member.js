@@ -53,25 +53,34 @@ export async function getAllMembers() {
  * @returns Los miembros que cumplan los filtros.
  */
 export async function getFilteredMembers(filters) {
-
 	try {
-
-		return await callServer(
-			"/api/member/filtered",
-			await getAuthToken(),
-			{
-				method: "GET",
-				body: JSON.stringify(filters)
-			}
-		);
-
-
+	  const queryParams = new URLSearchParams();
+  
+	  // Armamos los filtros en la URL
+	  Object.entries(filters).forEach(([key, value]) => {
+		if (value !== null && value !== "" && value !== undefined) {
+		  queryParams.append(key, value);
+		}
+	  });
+  
+	  const url = `/api/member/filtered?${queryParams.toString()}`;
+  
+	  return await callServer(
+		url,
+		await getAuthToken(),
+		{
+		  method: "GET",
+		  headers: {
+			"accept": "application/json"
+		  }
+		}
+	  );
 	} catch (error) {
-		console.error(error);
-		throw new Error("Error al obtener los miembros filtrados.");
+	  console.error(error);
+	  throw new Error("Error al obtener los miembros filtrados.");
 	}
-}
-
+  }
+  
 /**
  * Obtiene el link a la imagen de la previsualización del miembro.
  * @param {string} memberId El id del miembro.

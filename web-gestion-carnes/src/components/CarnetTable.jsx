@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Eye } from '@deemlol/next-icons';
 import {
@@ -10,13 +10,9 @@ import {
 
 import Loading from '@/components/loading';
 
-export default function CarnetTable({ data, loading, selectedIds, setSelectedIds }) {
+export default function CarnetTable({ data, loading, selectedIds, setSelectedIds, limit, loadMore, hasMoreData, pageLoading }) {
   const router = useRouter();
   const observerRef = useRef();
-
-  const [itemsToShow, setItemsToShow] = useState(30);
-  const [visibleData, setVisibleData] = useState([]);
-  const [massSelectMode, setMassSelectMode] = useState(false);
 
   const compactCellStyle = {
     paddingTop: '4px',
@@ -38,28 +34,28 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
     }
   };
 
+  // 🛠 Cuando el observer detecta que se llegó abajo
   useEffect(() => {
-    setVisibleData(data.slice(0, itemsToShow));
-  }, [data, itemsToShow]);
+    if (!hasMoreData) return; // ❌ No observes si ya no hay más datos
 
-  useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && itemsToShow < data.length) {
-          setTimeout(() => setItemsToShow((prev) => prev + 30), 500);
+        if (entries[0].isIntersecting) {
+          loadMore();
         }
       },
       { threshold: 1.0 }
     );
+
     if (observerRef.current) observer.observe(observerRef.current);
     return () => observer.disconnect();
-  }, [itemsToShow, data.length]);
+  }, [loadMore, hasMoreData]);
 
   const handleViewCarnet = (id) => {
     router.push(`/dashboard/carnet/${id}`);
   };
 
-  const nodes = visibleData.map((item) => ({
+  const nodes = data.map((item) => ({
     id: item._id,
     fullName: item.fullName,
     dni: item.dni,
@@ -73,10 +69,9 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
     selectedIds.includes(n.id)
   ).length;
 
-  const allVisibleSelected = visibleData.length > 0 && selectedVisibleCount === visibleData.length;
+  const allVisibleSelected = nodes.length > 0 && selectedVisibleCount === nodes.length;
 
   const handleSelectAllVisible = () => {
-    setMassSelectMode(true);
     const visibleIds = nodes.map((item) => item.id);
     const allSelected = visibleIds.every((id) => selectedIds.includes(id));
     if (allSelected) {
@@ -88,7 +83,6 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
   };
 
   const handleToggleId = (id) => {
-    setMassSelectMode(false);
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
@@ -100,7 +94,7 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
         <Loading />
       ) : (
         <>
-          {massSelectMode && selectedVisibleCount > 0 && (
+          {selectedVisibleCount > 0 && (
             <div className="bg-[#0f172a] text-white px-4 py-3 text-sm border-b border-gray-700">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span>
@@ -115,7 +109,7 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
                       setSelectedIds((prev) => Array.from(new Set([...prev, ...allIds])));
                     }}
                   >
-                    Seleccionar los {data.length} carnets en Para Imprimir
+                    Seleccionar los {data.length} carnets
                   </Button>
                 )}
               </div>
@@ -181,22 +175,20 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
                     <TableCell sx={compactCellStyle}>{item.year}</TableCell>
                     <TableCell sx={compactCellStyle}>
                       <span
-                        className={`
-                          px-2 py-0.5 rounded-sm font-medium
-                          ${item.validationState === 'VALIDADO' ? 'bg-[#73c66c]/40 text-[#356f30]' : ''}
-                          ${item.validationState === 'NO VÁLIDO' ? 'bg-[#e66c6c]/40 text-[#852d2d]' : ''}
-                          ${item.validationState === 'POR VALIDAR' ? 'bg-[#ebd758]/40 text-[#8a7b22]' : ''}
-                        `}
+                        className={`px-2 py-0.5 rounded-sm font-medium ${
+                          item.validationState === 'VALIDADO' ? 'bg-[#73c66c]/40 text-[#356f30]' :
+                          item.validationState === 'NO VÁLIDO' ? 'bg-[#e66c6c]/40 text-[#852d2d]' :
+                          item.validationState === 'POR VALIDAR' ? 'bg-[#ebd758]/40 text-[#8a7b22]' : ''
+                        }`}
                       >
                         {item.validationState}
                       </span>
                     </TableCell>
                     <TableCell sx={compactCellStyle}>
                       <span
-                        className={`
-                          px-2 py-0.5 rounded-sm font-medium
-                          ${item.printed ? 'bg-[#73c66c]/40 text-[#356f30]' : 'bg-[#e66c6c]/40 text-[#852d2d]'}
-                        `}
+                        className={`px-2 py-0.5 rounded-sm font-medium ${
+                          item.printed ? 'bg-[#73c66c]/40 text-[#356f30]' : 'bg-[#e66c6c]/40 text-[#852d2d]'
+                        }`}
                       >
                         {item.printed ? 'Sí' : 'No'}
                       </span>
@@ -216,15 +208,22 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
                     </TableCell>
                   </TableRow>
                 ))}
-                {itemsToShow < data.length && (
+
+                {hasMoreData && (
                   <TableRow>
                     <TableCell colSpan={7}>
                       <div
                         ref={observerRef}
                         className="flex justify-center items-center gap-2 py-4 text-sm text-gray-500"
                       >
-                        <CircularProgress size={20} thickness={5} />
-                        Cargando más carnets...
+                        {pageLoading ? (
+                          <>
+                            <CircularProgress size={20} thickness={5} />
+                            <span>Cargando más carnets...</span>
+                          </>
+                        ) : (
+                          <span>Desliza para cargar más</span>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
