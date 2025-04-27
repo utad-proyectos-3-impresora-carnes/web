@@ -11,6 +11,9 @@ import {
 import Loading from '@/components/loading';
 
 export default function CarnetTable({ data, loading, selectedIds, setSelectedIds, limit, loadMore, hasMoreData, pageLoading }) {
+
+  {/* TODO: ARREGLAR LA SELECCION DE TODOS LOS CARNETS*/}
+
   const router = useRouter();
   const observerRef = useRef();
 
