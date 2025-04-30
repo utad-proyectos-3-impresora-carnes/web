@@ -286,14 +286,35 @@ export default function FilterSidebar({ onApply }) {
         </div>
 
         {/* BOTÓN APLICAR FILTROS */}
-		{
-		 showApplyButton && (
-			<div className="px-4 mt-4">
-			<button onClick={applyFilters} className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">
-				Aplicar Filtros
-			</button>
-			</div>
-		)}
+        <div className="px-4 mt-4 space-y-2">
+        <button
+          onClick={applyFilters}
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded"
+        >
+          Aplicar Filtros
+        </button>
+
+        <button
+          onClick={() => {
+            setSelectedTitulaciones([]);
+            setSelectedEstados([]);
+            setSelectedYears([]);
+            setCustomYear("");
+            setSelectedImpreso([]);
+            setAppliedFilters({
+              selectedTitulaciones: [],
+              selectedEstados: [],
+              selectedYears: [],
+              selectedImpreso: [],
+              customYear: ""
+            });
+            onApply({});
+          }}
+          className="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded"
+        >
+          Eliminar Filtros
+        </button>
+</div>
       </div>
     </div>
   );
