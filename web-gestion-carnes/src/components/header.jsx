@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { deleteAuthToken } from "@/services/tokenHandler";
 
-export default function Header({ selectedIds }) {
+export default function Header({ selectedIds, hideSearch = false, hidePrint = false }) {
 	const [dropdownOpen, setDropdownOpen] = useState(false);
 	const [clientMounted, setClientMounted] = useState(false);
 
@@ -18,7 +18,6 @@ export default function Header({ selectedIds }) {
 
 	const handleLogout = () => {
 		deleteAuthToken();
-
 		if (router) {
 			router.push("/"); // Redirige al login
 		}
@@ -44,26 +43,31 @@ export default function Header({ selectedIds }) {
 						/>
 					</div>
 
-					<div className="flex items-center border-b border-white px-2 w-64">
-						<Search className="text-white mr-2 w-5 h-5" />
-						<input
-							type="text"
-							placeholder="BUSCADOR"
-							className="outline-none bg-transparent flex-grow text-sm text-white placeholder-white"
-						/>
-					</div>
+					{/* Buscador, oculto si hideSearch === true */}
+					{!hideSearch && (
+						<div className="flex items-center border-b border-white px-2 w-64">
+							<Search className="text-white mr-2 w-5 h-5" />
+							<input
+								type="text"
+								placeholder="BUSCADOR"
+								className="outline-none bg-transparent flex-grow text-sm text-white placeholder-white"
+							/>
+						</div>
+					)}
 				</div>
 
 				{/* DERECHA: BOTONES */}
 				<div className="flex items-center gap-3 relative">
-					{/* Botón IMPRIMIR */}
-					<button
-						className="flex items-center bg-white text-[#0864ec] px-4 py-2 rounded-md hover:bg-gray-100 transition text-sm font-semibold"
-						onClick={() => handlePrint(selectedIds)}
-					>
-						IMPRIMIR
-						<Printer className="ml-2 w-5 h-5" />
-					</button>
+					{/* Botón IMPRIMIR, oculto si hidePrint === true */}
+					{!hidePrint && (
+						<button
+							className="flex items-center bg-white text-[#0864ec] px-4 py-2 rounded-md hover:bg-gray-100 transition text-sm font-semibold"
+							onClick={() => handlePrint(selectedIds)}
+						>
+							IMPRIMIR
+							<Printer className="ml-2 w-5 h-5" />
+						</button>
+					)}
 
 					{/* Botón USUARIO + Dropdown */}
 					<div className="relative">
