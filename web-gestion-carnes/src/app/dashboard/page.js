@@ -43,7 +43,7 @@ export default function Page() {
     });
   }, []);
 
-  // 🛠 Cada vez que llegan nuevos carnets, agregarlos a data
+  // Cada vez que llegan nuevos carnets, agregarlos a data
   useEffect(() => {
     if (newFilteredData.length > 0) {
       setData(prev => [...prev, ...newFilteredData]);
@@ -51,7 +51,7 @@ export default function Page() {
     }
   }, [newFilteredData]);
 
-  // 🛠 Aplicar filtros nuevos
+  // Aplicar filtros nuevos
   const handleApplyFilters = (newFilters) => {
     setLoading(true);
     setFilters({
@@ -68,7 +68,7 @@ export default function Page() {
     });
   };
 
-  // 🛠 Cargar más carnets
+  // Cargar más carnets
   const loadMore = () => {
     if (!hasMoreData || pageLoading) return;
 
@@ -98,7 +98,7 @@ export default function Page() {
         </div>
       ) : (
         <>
-          <Header selectedIds={selectedIds} />
+          <Header selectedIds={selectedIds} onSearch={handleApplyFilters} />
           <div className="flex pt-16 h-[calc(100vh-4rem)] overflow-hidden">
             {/* Sidebar */}
             <aside className="w-64 h-full shrink-0 mt-8">
