@@ -27,7 +27,7 @@ export default function Page() {
     limit: 30,
   });
 
-  // 🛠 Primer carga inicial
+  // Primer carga inicial
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -116,6 +116,7 @@ export default function Page() {
                 loadMore={loadMore}
                 hasMoreData={hasMoreData}
                 pageLoading={pageLoading}
+                filters={filters}
               />
             </main>
           </div>
