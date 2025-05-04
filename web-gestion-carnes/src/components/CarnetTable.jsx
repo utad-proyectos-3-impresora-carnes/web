@@ -106,13 +106,13 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
         <div className="h-full flex flex-col">
 
           {selectedIds.length > 0 && (
-            <div className="sticky top-0 bg-[#0f172a] text-white px-4 py-3 text-sm border-b border-gray-700 z-20">
+            <div className="sticky top-0 bg-[#0f172a] text-white px-4 py-2 text-xs border-b border-gray-700 z-20 transition-all duration-300 ease-in-out">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span>
+                <span className="transition-all duration-300 ease-in-out">
                   Seleccionados: <strong>{selectedIds.length}</strong>
                 </span>
                 <div className="flex gap-3">
-                  {allFilteredIds.length === 0 && (
+                  {(allFilteredIds.length === 0 && selectedIds.length === visibleIds.length) && (
                     <Button
                       variant="text"
                       sx={{ color: '#3b82f6', textTransform: 'none' }}
@@ -144,6 +144,9 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
                         position: 'sticky',
                         top: 0,
                         zIndex: 1,
+                        padding: '6px 8px',
+                        fontSize: '0.75rem',
+                        transition: 'all 0.3s ease-in-out'
                       }}
                     >
                       {header}
@@ -158,6 +161,9 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
                       position: 'sticky',
                       top: 0,
                       zIndex: 2,
+                      padding: '6px 8px',
+                      fontSize: '0.75rem',
+                      transition: 'all 0.3s ease-in-out'
                     }}
                   >
                     <Checkbox
@@ -171,7 +177,7 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
 
               <TableBody>
                 {nodes.map((item, index) => (
-                  <TableRow key={item.id} sx={{ backgroundColor: index % 2 === 0 ? '#ffffff' : '#E5E9EC' }}>
+                  <TableRow key={item.id} sx={{ backgroundColor: index % 2 === 0 ? '#ffffff' : '#E5E9EC', transition: 'background-color 0.3s ease-in-out' }}>
                     <TableCell sx={compactCellStyle}>{item.fullName}</TableCell>
                     <TableCell sx={compactCellStyle}>{item.dni}</TableCell>
                     <TableCell sx={compactCellStyle}>{item.titulacion}</TableCell>
