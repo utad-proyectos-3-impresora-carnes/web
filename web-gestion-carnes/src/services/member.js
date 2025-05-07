@@ -54,33 +54,33 @@ export async function getAllMembers() {
  */
 export async function getFilteredMembers(filters) {
 	try {
-	  const queryParams = new URLSearchParams();
-  
-	  // Armamos los filtros en la URL
-	  Object.entries(filters).forEach(([key, value]) => {
-		if (value !== null && value !== "" && value !== undefined) {
-		  queryParams.append(key, value);
-		}
-	  });
-  
-	  const url = `/api/member/filtered?${queryParams.toString()}`;
-  
-	  return await callServer(
-		url,
-		await getAuthToken(),
-		{
-		  method: "GET",
-		  headers: {
-			"accept": "application/json"
-		  }
-		}
-	  );
+		const queryParams = new URLSearchParams();
+
+		// Armamos los filtros en la URL
+		Object.entries(filters).forEach(([key, value]) => {
+			if (value !== null && value !== "" && value !== undefined) {
+				queryParams.append(key, value);
+			}
+		});
+
+		const url = `/api/member/filtered?${queryParams.toString()}`;
+
+		return await callServer(
+			url,
+			await getAuthToken(),
+			{
+				method: "GET",
+				headers: {
+					"accept": "application/json"
+				}
+			}
+		);
 	} catch (error) {
-	  console.error(error);
-	  throw new Error("Error al obtener los miembros filtrados.");
+		console.error(error);
+		throw new Error("Error al obtener los miembros filtrados.");
 	}
-  }
-  
+}
+
 /**
  * Obtiene el link a la imagen de la previsualización del miembro.
  * @param {string} memberId El id del miembro.
@@ -155,25 +155,4 @@ export async function printMembers(members) {
 		throw new Error("Error al manda a imprimir miembros");
 	}
 
-}
-
-/**
- * Obtiene las titulaciones de la base de datos
- */
-export async function getAllGroups() {
-
-	try {
-
-		return await callServer(
-			"/api/group/allGroups",
-			await getAuthToken(),
-			{
-				method: "GET"
-			}
-		);
-
-	} catch (error) {
-		console.error(error);
-		throw new Error("Error al obtener todos los miembros.");
-	}
 }

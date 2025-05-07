@@ -1,10 +1,10 @@
-// FilterSidebar.jsx
 "use client";
 
 import { useState, useEffect } from "react";
 import { ChevronDown } from "@deemlol/next-icons";
 import { AnimatePresence, motion } from "framer-motion";
-import { getAllGroups, getGroupMetadata } from "@/services/member";
+import { getGroupMetadata } from "@/services/member";
+import { getAllGroups } from "@/services/group";
 import { useRouter } from "next/navigation";
 
 export default function FilterSidebar({ onApply }) {
