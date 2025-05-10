@@ -1,6 +1,6 @@
 "use client"; // Correcto para mostrar UI interactiva
 
-import { CircularProgress } from '@mui/material/CircularProgress';
+import { CircularProgress } from '@mui/material';
 
 /**
  * This is a placeholder component to show an action is loading (usually when a query is sent to server).
