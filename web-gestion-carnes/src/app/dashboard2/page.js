@@ -9,7 +9,7 @@ import FilterSidebar from "@/components/FilterSiderbar";
  * The dashboard page.
  * @returns Dahsboard page.
  */
-export default async function Page() {
+export default function Page() {
 
 	const [filters, setFilters] = useState({
 		fullName: null,
