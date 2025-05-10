@@ -81,7 +81,7 @@ function CommonFilterOption({ id, name, value, selected, onChange }) {
 				type="radio"
 				className={radioStyle}
 				checked={selected === value}
-				onChange={onChange}
+				onClick={onChange}
 			/>
 			<span>{name}</span>
 		</label>
@@ -182,8 +182,9 @@ function ValidationStateFilter({ changeValidationStateValue }) {
 								id={validationState.toUpperCase()}
 								name={validationState.toUpperCase()}
 								value={validationState.toUpperCase()}
-								selected={selectedValidationState} onChange={() => {
-									if (selectedValidationState.valueOf() !== validationState.toUpperCase()) {
+								selected={selectedValidationState}
+								onChange={() => {
+									if (selectedValidationState !== validationState.toUpperCase()) {
 										setSelectedValidationState(validationState.toUpperCase())
 									} else {
 										setSelectedValidationState(null)
