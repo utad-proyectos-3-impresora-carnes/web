@@ -2,6 +2,10 @@
 
 import { CircularProgress } from '@mui/material';
 
+/**
+ * This is a placeholder component to show an action is loading (usually when a query is sent to server).
+ * @returns The loading component.
+ */
 export default function Loading() {
 	return (
 		<div className="min-h-screen flex flex-col items-center justify-center bg-white">
