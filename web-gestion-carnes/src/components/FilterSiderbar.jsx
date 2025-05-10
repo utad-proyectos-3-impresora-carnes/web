@@ -7,31 +7,42 @@ import { getAllGroups } from "@/services/group";
 import { getMemberMetadata } from "@/services/member";
 
 /**
- * El componente con los filtros de los carnes.
- * @param {*} param0 Funcion para actualizar los filtros.
- * @returns Componente con los filtros.
+ * Sidebar component for filtering meat-related records.
+ * @param {function} changeFilters - Callback to update the applied filters.
+ * @returns JSX for the filter sidebar.
  */
 export default function FilterSidebar({ changeFilters }) {
 
-	const changeGroupValue = (groupId) => {
-		changeFilters("group", groupId);
-	}
-
-	const changeValidationStateValue = (validationState) => {
-		changeFilters("validationState", validationState);
-	}
+	// Handlers for updating each filter type
+	const handleGroupChange = (groupId) => changeFilters("group", groupId);
+	const handleValidationStateChange = (state) => changeFilters("validationState", state);
+	const handleAcademicYearChange = (year) => changeFilters("year", year);
+	const handlePrintedStateChange = (printed) => changeFilters("printed", printed);
 
 	return (
 		<div className="w-64 text-white px-0 py-5 fixed top-16 left-0 bottom-0 overflow-y-auto ml-[-4px] mt-[-15px]">
 			<div className="flex flex-col">
-				<CommonFilterPannel filterTitle={"Titulación"} filterContents={<GroupFilter changeGroupValue={changeGroupValue} />} />
-				<CommonFilterPannel filterTitle={"Estado"} filterContents={<ValidationStateFilter changeValidationStateValue={changeValidationStateValue} />} />
-				<CommonFilterPannel filterTitle={"Año Académico"} filterContents={<AcademicYearFilter />} />
-				<CommonFilterPannel filterTitle={"Impreso"} filterContents={<PrintedStateFilter />} />
-			</div >
-		</div >
+				<CommonFilterPannel
+					filterTitle="Titulación"
+					filterContents={<GroupFilter changeGroupValue={handleGroupChange} />}
+				/>
+				<CommonFilterPannel
+					filterTitle="Estado"
+					filterContents={<ValidationStateFilter changeValidationStateValue={handleValidationStateChange} />}
+				/>
+				<CommonFilterPannel
+					filterTitle="Año Académico"
+					filterContents={<AcademicYearFilter changeAcademicYearValue={handleAcademicYearChange} />}
+				/>
+				<CommonFilterPannel
+					filterTitle="Impreso"
+					filterContents={<PrintedStateFilter changePrintedStateValue={handlePrintedStateChange} />}
+				/>
+			</div>
+		</div>
 	);
 }
+
 
 /**
  * Parte genérica de un filtro.
