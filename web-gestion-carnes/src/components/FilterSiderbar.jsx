@@ -11,20 +11,14 @@ import { useEffect, useState } from "react";
  */
 export default function FilterSidebar({ changeFilters }) {
 	return (
-		<div>
-			<CommonFilterPannel>
-				<GroupFilter />
-			</CommonFilterPannel>
-			<CommonFilterPannel>
-				<ValidationStateFilter />
-			</CommonFilterPannel>
-			<CommonFilterPannel>
-				<AcademicYearFilter />
-			</CommonFilterPannel>
-			<CommonFilterPannel>
-				<PrintedStateFilter />
-			</CommonFilterPannel>
-		</div>
+		<div className="w-64 text-white px-0 py-5 fixed top-16 left-0 bottom-0 overflow-y-auto ml-[-4px] mt-[-15px]">
+			<div className="flex flex-col">
+				<CommonFilterPannel filterTitle={"Titulación"} filterContents={<GroupFilter />} />
+				<CommonFilterPannel filterTitle={"Estado"} filterContents={<ValidationStateFilter />} />
+				<CommonFilterPannel filterTitle={"Año Académico"} filterContents={<AcademicYearFilter />} />
+				<CommonFilterPannel filterTitle={"Impreso"} filterContents={<PrintedStateFilter />} />
+			</div >
+		</div >
 	);
 }
 
@@ -40,12 +34,6 @@ function CommonFilterPannel({ filterTitle, filterContents }) {
 		setShownFilter(!shownFilter.valueOf());
 	}
 
-	useEffect(
-		() => {
-			console.log("Changed visibility")
-		}, [shownFilter]
-	)
-
 	const sectionWrapperStyle = "bg-[#101426] text-white border border-white rounded-md overflow-hidden";
 	const sectionButtonStyle = "w-full flex justify-between items-center px-4 py-4 text-base font-medium";
 
@@ -55,7 +43,7 @@ function CommonFilterPannel({ filterTitle, filterContents }) {
 		<div className={sectionWrapperStyle}>
 			<button onClick={changeFilterVisibility} className={sectionButtonStyle}>
 				{filterTitle}
-				<ChevronDown className={chevronStyle(true)} />
+				<ChevronDown className={chevronStyle(shownFilter)} />
 			</button>
 			<AnimatePresence initial={false}>
 				{shownFilter && (
