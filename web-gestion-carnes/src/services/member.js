@@ -7,7 +7,7 @@ import { getAuthToken } from "./tokenHandler";
  * Gets the members metadata.
  * @returns The metadata of the members.	
  */
-export async function getGroupMetadata() {
+export async function getMemberMetadata() {
 
 	try {
 

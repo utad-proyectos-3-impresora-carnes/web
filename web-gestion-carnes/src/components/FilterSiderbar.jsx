@@ -4,6 +4,7 @@ import { ChevronDown } from "@deemlol/next-icons";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { getAllGroups } from "@/services/group";
+import { getMemberMetadata } from "@/services/member";
 
 /**
  * El componente con los filtros de los carnes.
@@ -16,11 +17,15 @@ export default function FilterSidebar({ changeFilters }) {
 		changeFilters("group", groupId);
 	}
 
+	const changeValidationStateValue = (validationState) => {
+		changeFilters("validationState", validationState);
+	}
+
 	return (
 		<div className="w-64 text-white px-0 py-5 fixed top-16 left-0 bottom-0 overflow-y-auto ml-[-4px] mt-[-15px]">
 			<div className="flex flex-col">
 				<CommonFilterPannel filterTitle={"Titulación"} filterContents={<GroupFilter changeGroupValue={changeGroupValue} />} />
-				<CommonFilterPannel filterTitle={"Estado"} filterContents={<ValidationStateFilter />} />
+				<CommonFilterPannel filterTitle={"Estado"} filterContents={<ValidationStateFilter changeValidationStateValue={changeValidationStateValue} />} />
 				<CommonFilterPannel filterTitle={"Año Académico"} filterContents={<AcademicYearFilter />} />
 				<CommonFilterPannel filterTitle={"Impreso"} filterContents={<PrintedStateFilter />} />
 			</div >
@@ -84,21 +89,22 @@ function CommonFilterOption({ id, name, value, selected, onChange }) {
 	);
 }
 
+/**
+ * Componnet to filter by groups.
+ * @param {*} param0 
+ * @returns 
+ */
 function GroupFilter({ changeGroupValue }) {
 
 	const [groups, setGroups] = useState([]);
 	const [loading, setLoading] = useState(true)
 	const [selectedGroup, setSelectedGroup] = useState(null);
 
-	const updateGroups = (newGroups) => {
-		setGroups(newGroups);
-	}
-
 	useEffect(() => {
 		getAllGroups()
 			.then(groups => {
 				setLoading(false)
-				updateGroups(groups)
+				setGroups(groups)
 			})
 			.catch((err) => {
 				console.error(err);
@@ -106,7 +112,6 @@ function GroupFilter({ changeGroupValue }) {
 	}, []);
 
 	useEffect(() => {
-		console.log(selectedGroup)
 		changeGroupValue(selectedGroup);
 	}, [selectedGroup])
 
@@ -117,16 +122,77 @@ function GroupFilter({ changeGroupValue }) {
 					(<p className="text-gray-400 pl-5 text-sm" > Cargando...</p>)
 					: groups.map(group => {
 						return (
-							<CommonFilterOption id={group._id} name={group.name} value={group._id} selected={selectedGroup} onChange={() => setSelectedGroup(group._id)} />
+							<CommonFilterOption
+								id={group._id}
+								name={group.name}
+								value={group._id}
+								selected={selectedGroup}
+								onChange={() => {
+									if (selectedGroup !== group._id) {
+										setSelectedGroup(group._id)
+									} else {
+										setSelectedGroup(null)
+									}
+								}} />
 						)
 					})
 			}
-		</>);
+		</>
+	);
 }
 
+/**
+ * Component to filter by validation state
+ * @param {*} param0 
+ * @returns 
+ */
 function ValidationStateFilter({ changeValidationStateValue }) {
+
+	const [validationStates, setValidationStates] = useState([]);
+	const [loading, setLoading] = useState(true)
+	const [selectedValidationState, setSelectedValidationState] = useState(null);
+
+	useEffect(
+		() => {
+			getMemberMetadata()
+				.then((metadata) => {
+					if (metadata?.validationStates) {
+						setValidationStates(metadata.validationStates);
+						setLoading(false);
+					}
+				})
+				.catch((err) => {
+					console.error(err);
+				});
+		}, []
+	);
+
+	useEffect(() => {
+		changeValidationStateValue(selectedValidationState);
+	}, [selectedValidationState]);
+
 	return (
-		<div></div>
+		<>
+			{
+				loading ?
+					(<p className="text-gray-400 pl-5 text-sm" > Cargando...</p>)
+					: validationStates.map(validationState => {
+						return (
+							<CommonFilterOption
+								id={validationState.toUpperCase()}
+								name={validationState.toUpperCase()}
+								value={validationState.toUpperCase()}
+								selected={selectedValidationState} onChange={() => {
+									if (selectedValidationState.valueOf() !== validationState.toUpperCase()) {
+										setSelectedValidationState(validationState.toUpperCase())
+									} else {
+										setSelectedValidationState(null)
+									}
+								}} />
+						)
+					})
+			}
+		</>
 	);
 }
 

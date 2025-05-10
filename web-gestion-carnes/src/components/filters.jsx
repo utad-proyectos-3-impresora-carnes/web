@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { ChevronDown } from "@deemlol/next-icons";
 import { AnimatePresence, motion } from "framer-motion";
-import { getGroupMetadata } from "@/services/member";
+import { getMemberMetadata } from "@/services/member";
 import { getAllGroups } from "@/services/group";
 import { useRouter } from "next/navigation";
 
