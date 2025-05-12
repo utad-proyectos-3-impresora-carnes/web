@@ -217,6 +217,8 @@ function AcademicYearFilter({ changeAcademicYearValue }) {
 
 	const [selectedYear, setSelectedSelectedYear] = useState(null);
 	const [currentYear,] = useState(new Date().getFullYear().toString());
+	const [customYearOpen, setCustomYearOpen] = useState(false);
+	const customYearName = "Otro";
 
 	return (
 		<>
@@ -224,14 +226,45 @@ function AcademicYearFilter({ changeAcademicYearValue }) {
 				id={currentYear}
 				name={currentYear}
 				value={currentYear}
-				selected={currentYear}
+				selected={selectedYear}
 				onChange={() => {
-					if (currentYear !== currentYear) {
-						setSelectedSelectedYear(validationState.toUpperCase())
+					if (selectedYear !== currentYear) {
+						setSelectedSelectedYear(currentYear)
 					} else {
 						setSelectedSelectedYear(null)
 					}
 				}} />
+
+			<CommonFilterOption
+				id={customYearName}
+				name={customYearName}
+				value={customYearOpen}
+				selected={true}
+				onChange={() => {
+					setCustomYearOpen(!customYearOpen);
+				}} />
+
+			<AnimatePresence>
+				{customYearOpen && (
+					<motion.div
+						initial={{ opacity: 0, height: 0 }}
+						animate={{ opacity: 1, height: "auto" }}
+						exit={{ opacity: 0, height: 0 }}
+						className="overflow-hidden"
+					>
+						<input
+							type="number"
+							placeholder="Ingrese otro año"
+							className="ml-5 p-2 rounded text-black w-4/5 mt-2"
+							min="1900"
+							max="2100"
+							value={selectedYear}
+							onChange={(e) => setSelectedSelectedYear(e.target.value)}
+							onKeyDown={handleCustomYearEnter}
+						/>
+					</motion.div>
+				)}
+			</AnimatePresence>
 			{/* <motion.div initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }} className="pb-4">
 				{[new Date().getFullYear().toString(), "otros"].map((y) => (
 					<label key={y} className={labelStyle}>
