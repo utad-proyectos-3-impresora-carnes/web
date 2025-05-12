@@ -220,6 +220,16 @@ function AcademicYearFilter({ changeAcademicYearValue }) {
 	const [customYearOpen, setCustomYearOpen] = useState(false);
 	const customYearName = "Otro";
 
+	useEffect(() => {
+		if (customYearOpen)
+			setSelectedSelectedYear(null);
+	}, [customYearOpen]);
+
+	useEffect(() => {
+		changeAcademicYearValue(selectedYear);
+	}, [selectedYear]);
+
+
 	return (
 		<>
 			<CommonFilterOption
@@ -228,6 +238,7 @@ function AcademicYearFilter({ changeAcademicYearValue }) {
 				value={currentYear}
 				selected={selectedYear}
 				onChange={() => {
+					setCustomYearOpen(false);
 					if (selectedYear !== currentYear) {
 						setSelectedSelectedYear(currentYear)
 					} else {
@@ -260,46 +271,11 @@ function AcademicYearFilter({ changeAcademicYearValue }) {
 							max="2100"
 							value={selectedYear}
 							onChange={(e) => setSelectedSelectedYear(e.target.value)}
-							onKeyDown={handleCustomYearEnter}
+						// onKeyDown={handleCustomYearEnter}
 						/>
 					</motion.div>
 				)}
 			</AnimatePresence>
-			{/* <motion.div initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }} className="pb-4">
-				{[new Date().getFullYear().toString(), "otros"].map((y) => (
-					<label key={y} className={labelStyle}>
-						<input
-							type="radio"
-							className={radioStyle}
-							name="anio"
-							checked={selected.year === y}
-							onChange={() => handleChange("year", y)}
-						/>
-						<span>{y === "otros" ? "Otros" : y}</span>
-					</label>
-				))}
-				<AnimatePresence>
-					{selected.year === "otros" && (
-						<motion.div
-							initial={{ opacity: 0, height: 0 }}
-							animate={{ opacity: 1, height: "auto" }}
-							exit={{ opacity: 0, height: 0 }}
-							className="overflow-hidden"
-						>
-							<input
-								type="number"
-								placeholder="Ingrese otro año"
-								className="ml-5 p-2 rounded text-black w-4/5 mt-2"
-								min="1900"
-								max="2100"
-								value={customYear}
-								onChange={(e) => setCustomYear(e.target.value)}
-								onKeyDown={handleCustomYearEnter}
-							/>
-						</motion.div>
-					)}
-				</AnimatePresence>
-			</motion.div> */}
 		</>
 	);
 }
