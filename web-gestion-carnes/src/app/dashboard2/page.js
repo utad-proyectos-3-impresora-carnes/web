@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 
 import Header from "@/components/header";
 import FilterSidebar from "@/components/FilterSiderbar";
+import CarnetTable from "@/components/CarnetTable2";
+import { getFilteredMembers } from "@/services/member";
 
 /**
  * The dashboard page.
@@ -20,30 +22,41 @@ export default function Page() {
 		validationState: null
 	});
 
+	const [data, setData] = useState([]);
+
 	const changeFilters = (category, value) => {
 		setFilters(previousFilters => ({
 			...previousFilters,
 			[category]: value
 		}));
-	}
+	};
 
 	useEffect(() => {
 
-		console.log(filters);
+		getFilteredMembers(filters)
+			.then((response) => {
+				console.log(response);
+			});
 
-	}, [filters])
+		// console.log(filters);
+
+	}, [filters]);
 
 
 
 	return (
 		<div className="h-screen w-full overflow-hidden">
 			<Header />
-			<p>Dashboard two!</p>
 			<div className="flex pt-16 h-[calc(100vh-4rem)] overflow-hidden">
 				{/* Sidebar */}
 				<aside className="w-64 h-full shrink-0 mt-8">
 					<FilterSidebar changeFilters={changeFilters} />
 				</aside>
+
+				{/* Contenido principal */}
+				{/* <main className="flex-1 overflow-y-auto px-0 mt-1">
+					<CarnetTable data={data} />
+				</main> */}
 			</div>
 		</div>
 	);
