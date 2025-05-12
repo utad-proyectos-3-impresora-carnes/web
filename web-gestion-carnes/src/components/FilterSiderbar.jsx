@@ -43,7 +43,6 @@ export default function FilterSidebar({ changeFilters }) {
 	);
 }
 
-
 /**
  * Parte genérica de un filtro.
  * @returns Componente con el envoltorio de un filtro.
@@ -280,8 +279,45 @@ function AcademicYearFilter({ changeAcademicYearValue }) {
 	);
 }
 
+/**
+ * Component to filter by printed state.
+ * @param {*} param0 
+ * @returns 
+ */
 function PrintedStateFilter({ changePrintedStateValue }) {
+
+	const [selectedPrintedState, setSelectedSelectedPrintedState] = useState(null);
+
+	useEffect(() => {
+		changePrintedStateValue(selectedPrintedState);
+	}, [selectedPrintedState]);
+
 	return (
-		<div></div>
+		<>
+			<CommonFilterOption
+				id={"yes"}
+				name={"Sí"}
+				value={true}
+				selected={selectedPrintedState}
+				onChange={() => {
+					if (selectedPrintedState !== true) {
+						setSelectedSelectedPrintedState(true);
+					} else {
+						setSelectedSelectedPrintedState(null);
+					}
+				}} />
+			<CommonFilterOption
+				id={"no"}
+				name={"No"}
+				value={false}
+				selected={selectedPrintedState}
+				onChange={() => {
+					if (selectedPrintedState !== false) {
+						setSelectedSelectedPrintedState(false);
+					} else {
+						setSelectedSelectedPrintedState(null);
+					}
+				}} />
+		</>
 	);
 }
