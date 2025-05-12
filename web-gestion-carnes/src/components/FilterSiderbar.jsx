@@ -208,9 +208,66 @@ function ValidationStateFilter({ changeValidationStateValue }) {
 	);
 }
 
+/**
+ * Component to filter by year.
+ * @param {*} param0 
+ * @returns 
+ */
 function AcademicYearFilter({ changeAcademicYearValue }) {
+
+	const [selectedYear, setSelectedSelectedYear] = useState(null);
+	const [currentYear,] = useState(new Date().getFullYear().toString());
+
 	return (
-		<div></div>
+		<>
+			<CommonFilterOption
+				id={currentYear}
+				name={currentYear}
+				value={currentYear}
+				selected={currentYear}
+				onChange={() => {
+					if (currentYear !== currentYear) {
+						setSelectedSelectedYear(validationState.toUpperCase())
+					} else {
+						setSelectedSelectedYear(null)
+					}
+				}} />
+			{/* <motion.div initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }} className="pb-4">
+				{[new Date().getFullYear().toString(), "otros"].map((y) => (
+					<label key={y} className={labelStyle}>
+						<input
+							type="radio"
+							className={radioStyle}
+							name="anio"
+							checked={selected.year === y}
+							onChange={() => handleChange("year", y)}
+						/>
+						<span>{y === "otros" ? "Otros" : y}</span>
+					</label>
+				))}
+				<AnimatePresence>
+					{selected.year === "otros" && (
+						<motion.div
+							initial={{ opacity: 0, height: 0 }}
+							animate={{ opacity: 1, height: "auto" }}
+							exit={{ opacity: 0, height: 0 }}
+							className="overflow-hidden"
+						>
+							<input
+								type="number"
+								placeholder="Ingrese otro año"
+								className="ml-5 p-2 rounded text-black w-4/5 mt-2"
+								min="1900"
+								max="2100"
+								value={customYear}
+								onChange={(e) => setCustomYear(e.target.value)}
+								onKeyDown={handleCustomYearEnter}
+							/>
+						</motion.div>
+					)}
+				</AnimatePresence>
+			</motion.div> */}
+		</>
 	);
 }
 
