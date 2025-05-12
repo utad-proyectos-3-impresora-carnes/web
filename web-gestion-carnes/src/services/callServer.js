@@ -21,8 +21,9 @@ export default async function callServer(url, token, options = {}) {
 		const res = await fetch(process.env.NEXT_PUBLIC_API_URL + url, options);
 
 		// Si la query falla, lanza error.
-		if (res.ok !== true)
-			throw new Error("La request a [" + url + "] fallo!");
+		if (res.ok !== true) {
+			throw new Error("La request a [" + url + "] fallo!" + "\n Detalles: " + res.statusText);
+		}
 
 		// Return query result.
 		return await res.json();
