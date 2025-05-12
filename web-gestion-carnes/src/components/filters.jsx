@@ -34,7 +34,7 @@ export default function FilterSidebar({ onApply }) {
 	}, [router]);
 
 	useEffect(() => {
-		getGroupMetadata()
+		getMemberMetadata()
 			.then((metadata) => {
 				if (metadata?.validationStates) setStates(metadata.validationStates);
 			})
