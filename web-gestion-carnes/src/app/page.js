@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { loginUser } from '../services/user';
 import { auth } from '@/services/auth';
-import Loading from '@/components/loading';
+import Loading from '@/components/Loading';
 import { setAuthToken } from '@/services/tokenHandler';
 
 export default function Login() {
