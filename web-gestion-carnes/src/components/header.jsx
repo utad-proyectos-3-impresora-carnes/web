@@ -5,11 +5,15 @@ import { Search, User, Printer, LogOut } from "@deemlol/next-icons";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { deleteAuthToken } from "@/services/tokenHandler";
+import WarningModal from "./WarningModal";
 
 export default function Header({ selectedIds, hideSearch = false, hidePrint = false, onSearch }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [clientMounted, setClientMounted] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [showWarning, setShowWarning] = useState(false);
+  const [firstInvalidId, setFirstInvalidId] = useState(null);
+
 
   useEffect(() => {
     setClientMounted(true);
@@ -25,8 +29,24 @@ export default function Header({ selectedIds, hideSearch = false, hidePrint = fa
   };
 
   const handlePrint = (selectedIds) => {
-    console.log("Imprimiendo los carnets con IDs:", selectedIds);
+    const stored = localStorage.getItem('selectedCarnetIds');
+    const storedIds = stored ? JSON.parse(stored) : [];
+    const selected = storedIds.length > 0 ? storedIds : selectedIds;
+  
+    const invalid = selected.find(id => {
+      const member = JSON.parse(localStorage.getItem(`member_${id}`));
+      return member && member.validationState !== 'validated';
+    });
+  
+    if (invalid) {
+      setFirstInvalidId(invalid);
+      setShowWarning(true);
+      return;
+    }
+  
+    console.log("Imprimiendo los carnets con IDs:", selected);
   };
+  
 
   useEffect(() => {
     const delay = setTimeout(() => {

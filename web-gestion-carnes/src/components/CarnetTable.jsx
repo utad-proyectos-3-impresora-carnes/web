@@ -22,8 +22,14 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
     paddingTop: '4px',
     paddingBottom: '4px',
     paddingLeft: '8px',
-    paddingRight: '16px'
+    paddingRight: '16px',
+    fontFamily: 'Montserrat, sans-serif',
+    fontWeight: 400,
+    fontSize: '16px',
+    lineHeight: '20px',
+    letterSpacing: 0
   };
+  
 
   const translateValidation = (state) => {
     switch (state) {
@@ -106,13 +112,13 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
         <div className="h-full flex flex-col">
 
           {selectedIds.length > 0 && (
-            <div className="sticky top-0 bg-[#0f172a] text-white px-4 py-2 text-xs border-b border-gray-700 z-20 transition-all duration-300 ease-in-out">
+            <div className="sticky top-0 bg-[#0f172a] text-white px-4 py-2 text-xs border-b border-gray-700 z-20 transition-all duration-300 ease-in-out animate-fade-in">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="transition-all duration-300 ease-in-out">
                   Seleccionados: <strong>{selectedIds.length}</strong>
                 </span>
                 <div className="flex gap-3">
-                  {(allFilteredIds.length === 0 && selectedIds.length === visibleIds.length) && (
+                  {allVisibleSelected && allFilteredIds.length === 0 && (
                     <Button
                       variant="text"
                       sx={{ color: '#3b82f6', textTransform: 'none' }}
@@ -136,19 +142,22 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
                 <TableRow>
                   {['Nombre', 'DNI', 'Titulación', 'Año', 'Estado', 'Impreso'].map(header => (
                     <TableCell
-                      key={header}
-                      sx={{
-                        backgroundColor: '#0f172a',
-                        color: 'white',
-                        fontWeight: 'bold',
-                        position: 'sticky',
-                        top: 0,
-                        zIndex: 1,
-                        padding: '6px 8px',
-                        fontSize: '0.75rem',
-                        transition: 'all 0.3s ease-in-out'
-                      }}
-                    >
+                        key={header}
+                        sx={{
+                          backgroundColor: '#0f172a',
+                          color: 'white',
+                          fontWeight: 400,
+                          fontFamily: 'Montserrat, sans-serif',
+                          fontSize: '16px',
+                          lineHeight: '20px',
+                          letterSpacing: '0',
+                          position: 'sticky',
+                          top: 0,
+                          zIndex: 1,
+                          padding: '6px 8px',
+                          transition: 'all 0.3s ease-in-out'
+                        }}
+                      >
                       {header}
                     </TableCell>
                   ))}
@@ -169,7 +178,7 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
                     <Checkbox
                       checked={allVisibleSelected}
                       onChange={handleToggleSelectAllVisible}
-                      sx={{ color: 'white' }}
+                      sx={{ color: 'white', transition: 'all 0.2s ease-in-out' }}
                     />
                   </TableCell>
                 </TableRow>
@@ -209,7 +218,7 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
                         </button>
                         <Checkbox
                           size="small"
-                          sx={{ p: '4px', color: '#3b82f6', '&.Mui-checked': { color: '#3b82f6' } }}
+                          sx={{ p: '4px', color: '#3b82f6', transition: 'all 0.2s ease-in-out', '&.Mui-checked': { color: '#3b82f6' } }}
                           checked={selectedIds.includes(item.id)}
                           onChange={() => handleToggleId(item.id)}
                         />

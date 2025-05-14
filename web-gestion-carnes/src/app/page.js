@@ -15,6 +15,8 @@ export default function Login() {
 	const [error, setError] = useState(null);
 	const router = useRouter();
 	const [rotation, setRotation] = useState({ x: 0, y: 0 });
+	const [loadingButton, setLoadingButton] = useState(false);
+
 
 	useEffect(() => {
 		const check = async () => {
@@ -46,15 +48,18 @@ export default function Login() {
 	const handleLogin = async (e) => {
 		e.preventDefault();
 		setError(null);
-
+		setLoadingButton(true);
+	  
 		try {
-			const data = await loginUser(email, password);
-			await setAuthToken(data.token);
-			router.push('/dashboard');
+		  const data = await loginUser(email, password);
+		  await setAuthToken(data.token);
+		  router.push('/dashboard');
 		} catch (error) {
-			setError(error.message || 'Ha ocurrido un error.');
+		  setError(error.message || 'Ha ocurrido un error.');
+		  setLoadingButton(false);
 		}
-	};
+	  };
+	  
 
 	if (checkingAuth) return <Loading />;
 
@@ -96,8 +101,16 @@ export default function Login() {
 								className="border p-3 text-lg rounded w-full mb-4 focus:ring-2 focus:ring-blue-500 transition"
 								required
 							/>
-							<button type="submit" className="bg-[#0864ec] text-white px-6 py-3 rounded w-full text-lg font-semibold mt-4 hover:bg-blue-700 transition">
-								Entrar
+							<button
+							type="submit"
+							disabled={loadingButton}
+							className={`bg-[#0864ec] text-white px-6 py-3 rounded w-full text-lg font-semibold mt-4 transition flex items-center justify-center ${loadingButton ? 'opacity-70 cursor-not-allowed' : 'hover:bg-blue-700'}`}
+							>
+							{loadingButton ? (
+								<div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+							) : (
+								'Entrar'
+							)}
 							</button>
 							{error && <p className="text-red-500 mt-4 text-center text-lg">{error}</p>}
 						</form>
