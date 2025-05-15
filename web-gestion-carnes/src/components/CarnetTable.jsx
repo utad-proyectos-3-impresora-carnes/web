@@ -101,146 +101,138 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
 		}
 	};
 
-	return (
-		<div className="h-full rounded-xl border border-gray-300 shadow-md overflow-hidden relative">
-			{loading ? <Loading /> : (
-				<div className="h-full flex flex-col">
+  const headerStyle = {	
+    backgroundColor: '#0f172a',
+		color: 'white',
+		fontWeight: 'bold',
+		position: 'sticky',
+		top: 0,
+		zIndex: 1,
+		padding: '6px 8px',
+		fontSize: '0.75rem',
+		transition: 'all 0.3s ease-in-out',
+  }
 
-					{selectedIds.length > 0 && (
-						<div className="sticky top-0 bg-[#0f172a] text-white px-4 py-2 text-xs border-b border-gray-700 z-20 transition-all duration-300 ease-in-out">
-							<div className="flex flex-wrap items-center justify-between gap-2">
-								<span className="transition-all duration-300 ease-in-out">
-									Seleccionados: <strong>{selectedIds.length}</strong>
-								</span>
-								<div className="flex gap-3">
-									{(allFilteredIds.length === 0 && selectedIds.length === visibleIds.length) && (
-										<Button
-											variant="text"
-											sx={{ color: '#3b82f6', textTransform: 'none' }}
-											onClick={handleSelectAllFiltered}
-											disabled={selectingAllFiltered}
-										>
-											Seleccionar todos los carnets filtrados
-										</Button>
-									)}
-								</div>
-							</div>
-						</div>
-					)}
+  return (
+    <div className="h-full rounded-xl border border-gray-300 shadow-md overflow-hidden relative">
+      {loading ? <Loading /> : (
+        <div className="flex flex-col flex-1 overflow-hidden">
 
-					<TableContainer
-						className="h-full overflow-auto"
-						sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}
-					>
-						<Table stickyHeader className="min-w-full" sx={{ flex: '1 1 auto' }}>
-							<TableHead>
-								<TableRow>
-									{['Nombre', 'DNI', 'Titulación', 'Año', 'Estado', 'Impreso'].map(header => (
-										<TableCell
-											key={header}
-											sx={{
-												backgroundColor: '#0f172a',
-												color: 'white',
-												fontWeight: 'bold',
-												position: 'sticky',
-												top: 0,
-												zIndex: 1,
-												padding: '6px 8px',
-												fontSize: '0.75rem',
-												transition: 'all 0.3s ease-in-out'
-											}}
-										>
-											{header}
-										</TableCell>
-									))}
-									<TableCell
-										align="right"
-										sx={{
-											backgroundColor: '#0f172a',
-											color: 'white',
-											fontWeight: 'bold',
-											position: 'sticky',
-											top: 0,
-											zIndex: 2,
-											padding: '6px 8px',
-											fontSize: '0.75rem',
-											transition: 'all 0.3s ease-in-out'
-										}}
-									>
-										<Checkbox
-											checked={allVisibleSelected}
-											onChange={handleToggleSelectAllVisible}
-											sx={{ color: 'white' }}
-										/>
-									</TableCell>
-								</TableRow>
-							</TableHead>
+          {selectedIds.length > 0 && (
+            <div className="sticky top-0 bg-[#0f172a] text-white px-4 py-2 text-xs border-b border-gray-700 z-20 transition-all duration-300 ease-in-out">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="transition-all duration-300 ease-in-out">
+                  Seleccionados: <strong>{selectedIds.length}</strong>
+                </span>
+                <div className="flex gap-3">
+                  {(allFilteredIds.length === 0 && selectedIds.length === visibleIds.length) && (
+                    <Button
+                      variant="text"
+                      sx={{ color: '#3b82f6', textTransform: 'none' }}
+                      onClick={handleSelectAllFiltered}
+                      disabled={selectingAllFiltered}
+                    >
+                      Seleccionar todos los carnets filtrados
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
-							<TableBody>
-								{nodes.map((item, index) => (
-									<TableRow key={item.id} sx={{ backgroundColor: index % 2 === 0 ? '#ffffff' : '#E5E9EC', transition: 'background-color 0.3s ease-in-out' }}>
-										<TableCell sx={compactCellStyle}>{item.fullName}</TableCell>
-										<TableCell sx={compactCellStyle}>{item.dni}</TableCell>
-										<TableCell sx={compactCellStyle}>{item.titulacion}</TableCell>
-										<TableCell sx={compactCellStyle}>{item.year}</TableCell>
-										<TableCell sx={compactCellStyle}>
-											<span className={`px-2 py-0.5 rounded-sm font-medium ${item.validationState === 'VALIDADO' ? 'bg-[#73c66c]/40 text-[#356f30]' :
-												item.validationState === 'NO VÁLIDO' ? 'bg-[#e66c6c]/40 text-[#852d2d]' :
-													item.validationState === 'POR VALIDAR' ? 'bg-[#ebd758]/40 text-[#8a7b22]' : ''
-												}`}>
-												{item.validationState}
-											</span>
-										</TableCell>
-										<TableCell sx={compactCellStyle}>
-											<span className={`px-2 py-0.5 rounded-sm font-medium ${item.printed ? 'bg-[#73c66c]/40 text-[#356f30]' : 'bg-[#e66c6c]/40 text-[#852d2d]'
-												}`}>
-												{item.printed ? 'Sí' : 'No'}
-											</span>
-										</TableCell>
-										<TableCell sx={compactCellStyle} align="right">
-											<div className="flex items-center justify-end gap-3">
-												<button
-													title="Ver carnet"
-													onClick={() => router.push(`/dashboard/carnet/${item.id}`)}
-													className="flex items-center justify-center w-6 h-6 rounded-full bg-white hover:scale-110 shadow-lg hover:shadow-lg transition-all duration-300"
-												>
-													<Eye className="w-4 h-4 text-blue-600" />
-												</button>
-												<Checkbox
-													size="small"
-													sx={{ p: '4px', color: '#3b82f6', '&.Mui-checked': { color: '#3b82f6' } }}
-													checked={selectedIds.includes(item.id)}
-													onChange={() => handleToggleId(item.id)}
-												/>
-											</div>
-										</TableCell>
-									</TableRow>
-								))}
+          <TableContainer
+            className="h-full overflow-auto"
+            sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}
+          >
+            <Table stickyHeader className="min-w-full" sx={{ flex: '1 1 auto' }}>
+              <TableHead>
+                <TableRow>
+                  {['Nombre', 'DNI', 'Titulación', 'Año', 'Estado', 'Impreso'].map(header => (
+                    <TableCell
+                      key={header}
+                      sx={headerStyle}
+                    >
+                      {header}
+                    </TableCell>
+                  ))}
+                  <TableCell
+                    align="right"
+                    sx={{ ...headerStyle, zIndex: 2 }}
+                  >
+                    <Checkbox
+                      checked={allVisibleSelected}
+                      onChange={handleToggleSelectAllVisible}
+                      sx={{ color: 'white' }}
+                    />
+                  </TableCell>
+                </TableRow>
+              </TableHead>
 
-								{hasMoreData && (
-									<TableRow>
-										<TableCell colSpan={8}>
-											<div
-												ref={observerRef}
-												className="flex justify-center items-center gap-2 py-4 text-sm text-gray-500"
-											>
-												{pageLoading ? (
-													<>
-														<CircularProgress size={20} thickness={5} />
-														<span>Cargando más carnets...</span>
-													</>
-												) : (
-													<span>Desliza para cargar más</span>
-												)}
-											</div>
-										</TableCell>
-									</TableRow>
-								)}
-							</TableBody>
-						</Table>
-					</TableContainer>
-				</div>
-			)}
-		</div>
-	);
+              <TableBody>
+                {nodes.map((item, index) => (
+                  <TableRow key={item.id} sx={{ backgroundColor: index % 2 === 0 ? '#ffffff' : '#E5E9EC', transition: 'background-color 0.3s ease-in-out', height: '40px', maxHeight: '40px' }}>
+                    <TableCell sx={compactCellStyle}>{item.fullName}</TableCell>
+                    <TableCell sx={compactCellStyle}>{item.dni}</TableCell>
+                    <TableCell sx={compactCellStyle}>{item.titulacion}</TableCell>
+                    <TableCell sx={compactCellStyle}>{item.year}</TableCell>
+                    <TableCell sx={compactCellStyle}>
+                      <span className={`px-2 py-0.5 rounded-sm font-medium ${item.validationState === 'VALIDADO' ? 'bg-[#73c66c]/40 text-[#356f30]' :
+                        item.validationState === 'NO VÁLIDO' ? 'bg-[#e66c6c]/40 text-[#852d2d]' :
+                          item.validationState === 'POR VALIDAR' ? 'bg-[#ebd758]/40 text-[#8a7b22]' : ''
+                        }`}>
+                        {item.validationState}
+                      </span>
+                    </TableCell>
+                    <TableCell sx={compactCellStyle}>
+                      <span className={`px-2 text-xs leading-tight rounded-sm font-medium ${item.printed ? 'bg-[#73c66c]/40 text-[#356f30]' : 'bg-[#e66c6c]/40 text-[#852d2d]'
+                        }`}>
+                        {item.printed ? 'Sí' : 'No'}
+                      </span>
+                    </TableCell>
+                    <TableCell sx={compactCellStyle} align="right">
+                      <div className="flex items-center justify-end gap-3">
+                        <button
+                          title="Ver carnet"
+                          onClick={() => router.push(`/dashboard/carnet/${item.id}`)}
+                          className="flex items-center justify-center w-6 h-6 rounded-full bg-white hover:scale-110 shadow-lg hover:shadow-lg transition-all duration-300"
+                        >
+                          <Eye className="w-4 h-4 text-blue-600" />
+                        </button>
+                        <Checkbox
+                          size="small"
+                          sx={{ p: '4px', color: '#3b82f6', '&.Mui-checked': { color: '#3b82f6' } }}
+                          checked={selectedIds.includes(item.id)}
+                          onChange={() => handleToggleId(item.id)}
+                        />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+
+                {hasMoreData && (
+                  <TableRow>
+                    <TableCell colSpan={8}>
+                      <div
+                        ref={observerRef}
+                        className="flex justify-center items-center gap-2 py-4 text-sm text-gray-500"
+                      >
+                        {pageLoading ? (
+                          <>
+                            <CircularProgress size={20} thickness={5} />
+                            <span>Cargando más carnets...</span>
+                          </>
+                        ) : (
+                          <span>Desliza para cargar más</span>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </div>
+      )}
+    </div>
+  );
 }

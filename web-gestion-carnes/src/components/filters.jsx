@@ -45,9 +45,9 @@ export default function FilterSidebar({ onApply }) {
 			.finally(() => setLoading(false));
 	}, [router]);
 
-	const sectionWrapperStyle = "bg-[#101426] text-white border border-white rounded-md overflow-hidden";
-	const sectionButtonStyle = "w-full flex justify-between items-center px-4 py-4 text-base font-medium";
-	const labelStyle = "flex items-center space-x-3 py-2 pl-5 text-[15px] text-white";
+	const sectionWrapperStyle = "bg-white text-[#101426] border border-white rounded-md overflow-hidden";
+	const sectionButtonStyle = "w-full flex justify-between items-center px-4 py-4 text-base font-medium bg-[#101426] text-white";
+	const labelStyle = "flex items-center space-x-3 py-2 pl-5 text-[16px] leading-[20px] font-normal text-[#14192C] font-[Montserrat]";
 	const radioStyle = "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500";
 	const chevronStyle = (open) => `w-5 h-5 transition-transform duration-300 ${open ? "rotate-180" : ""}`;
 
