@@ -22,23 +22,6 @@ export default function FilterSidebar({ onApply }) {
 	const [selected, setSelected] = useState({});
 	const router = useRouter();
 
-	const CustomRadio = ({ name, value, checked, onChange, label }) => (
-		<label className="flex items-center gap-3 py-2 pl-5 cursor-pointer">
-			<input
-			type="radio"
-			name={name}
-			value={value}
-			checked={checked}
-			onChange={onChange}
-			className="peer hidden"
-			/>
-			<span className="w-4 h-4 rounded-full border border-gray-400 peer-checked:border-blue-600 peer-checked:ring-2 peer-checked:ring-blue-200 transition"></span>
-			<span className="text-[16px] leading-[20px] font-normal text-[#14192C] font-[Montserrat]">
-			{label}
-			</span>
-		</label>
-	);
-
 
 	const CloseIcon = () => (
   		<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -71,29 +54,31 @@ export default function FilterSidebar({ onApply }) {
 			.finally(() => setLoading(false));
 	}, [router]);
 
-	const sectionWrapperStyle = "bg-white text-[#101426] border border-white rounded-md overflow-hidden";
-	const sectionButtonStyle = "w-full flex justify-between items-center px-4 py-4 text-base font-medium bg-[#101426] text-white";
+	const sectionWrapperStyle = "bg-white text-[#101426] border border-white rounded-md overflow-hidden font-[Montserrat] font-bold";
+	const sectionButtonStyle = "w-full flex justify-between items-center px-4 py-4 text-base font-medium bg-[#101426] text-white font-[Montserrat] font-bold border-t-4 border-black border-r-4 rounded-tr-md";
 	const labelStyle = "flex items-center space-x-3 py-2 pl-5 text-[16px] leading-[20px] font-normal text-[#14192C] font-[Montserrat]";
 	const radioStyle = "w-4 h-4 accent-blue-600";
 	const clearSelectionStyle = "flex items-center justify-start gap-[10px] px-4 py-2 text-[#F05135] font-medium font-montserrat text-[16px] leading-[20px]";
 	const chevronStyle = (open) => `w-5 h-5 transition-transform duration-300 ${open ? "rotate-180" : ""}`;
 
 	const updateFilters = (newSelected) => {
-		const filters = {};
-		if (newSelected.group) filters.group = [newSelected.group];
-		if (newSelected.validationState) filters.validationState = [newSelected.validationState];
-		if (newSelected.year) {
-			if (newSelected.year === "otros" && customYear) {
-				filters.year = [parseInt(customYear)];
-			} else if (newSelected.year !== "otros") {
-				filters.year = [parseInt(newSelected.year)];
-			}
+	const filters = {};
+	if (newSelected.group) filters.group = [newSelected.group];
+	if (newSelected.validationState) filters.validationState = [newSelected.validationState];
+	if (newSelected.year) {
+		if (newSelected.year === 'otros' && customYear) {
+		filters.year = [parseInt(customYear)];
+		} else if (newSelected.year !== 'otros') {
+		filters.year = [parseInt(newSelected.year)];
 		}
-		if (newSelected.printed) {
-			filters.printed = newSelected.printed === "Sí";
-		}
-		onApply(filters);
+	}
+	if (newSelected.printed) {
+		filters.printed = newSelected.printed === "Sí";
+	}
+
+	onApply(filters); // solo actualiza esos campos
 	};
+
 
 	const handleChange = (type, value) => {
 		const newSelected = { ...selected };
@@ -121,18 +106,18 @@ export default function FilterSidebar({ onApply }) {
 	};
 
 	return (
-		<div className="w-64 text-white px-0 py-5 fixed top-16 left-0 bottom-0 overflow-y-auto ml-[-4px] mt-[-15px]">
+		<div className="w-64 text-white px-0 py-5 fixed top-16 left-0 bottom-0 overflow-y-auto ml-[-4px] mt-[-15px] font-bold">
 			<div className="flex flex-col">
 				{/* TITULACIÓN */}
 				<div className={sectionWrapperStyle}>
 					{Object.keys(selected).length > 0 && (
 					<div className={clearSelectionStyle} onClick={clearFilters}>
 						<CloseIcon />
-						<span>Borrar filtros</span>
+						<span className="font-bold">Borrar filtros</span>
 					</div>
 				)}
 
-					<button onClick={() => setOpenSections(p => ({ ...p, titulacion: !p.titulacion }))} className={sectionButtonStyle}>
+					<button className={sectionButtonStyle} onClick={() => setOpenSections(p => ({ ...p, titulacion: !p.titulacion }))}>
 						Titulación
 						<ChevronDown className={chevronStyle(openSections.titulacion)} />
 					</button>
@@ -151,7 +136,7 @@ export default function FilterSidebar({ onApply }) {
 												checked={selected.group === t.name}
 												onChange={() => handleChange("group", t.name)}
 											/>
-											<span>{t.name}</span>
+											<span className="font-bold">{t.name}</span>
 										</label>
 									))
 								)}
@@ -168,7 +153,7 @@ export default function FilterSidebar({ onApply }) {
 					</button>
 					<AnimatePresence initial={false}>
 						{openSections.estado && (
-							<motion.div initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }} className="pb-4">
+							<motion.div initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }} className="pb-4 boder">
 								{states.map((s) => (
 									<label key={s} className={labelStyle}>
 										<input
@@ -178,7 +163,7 @@ export default function FilterSidebar({ onApply }) {
 											checked={selected.validationState === s}
 											onChange={() => handleChange("validationState", s)}
 										/>
-										<span>
+										<span className="font-bold">
 											{s === "to_validate" ? "POR VALIDAR" : s === "validated" ? "VALIDADO" : s === "rejected" ? "NO VÁLIDO" : "DESCONOCIDO"}
 										</span>
 									</label>
@@ -206,7 +191,7 @@ export default function FilterSidebar({ onApply }) {
 											checked={selected.year === y}
 											onChange={() => handleChange("year", y)}
 										/>
-										<span>{y === "otros" ? "Otros" : y}</span>
+										<span className="font-bold">{y === "otros" ? "Otros" : y}</span>
 									</label>
 								))}
 								<AnimatePresence>
@@ -220,7 +205,7 @@ export default function FilterSidebar({ onApply }) {
 											<input
 												type="number"
 												placeholder="Ingrese otro año"
-												className="ml-5 p-2 rounded text-black w-4/5 mt-2"
+												className="ml-5 p-2 rounded text-black w-4/5 mt-2 border border-gray-900"
 												min="1900"
 												max="2100"
 												value={customYear}
@@ -253,7 +238,7 @@ export default function FilterSidebar({ onApply }) {
 											checked={selected.printed === v}
 											onChange={() => handleChange("printed", v)}
 										/>
-										<span>{v}</span>
+										<span className="font-bold">{v}</span>
 									</label>
 								))}
 							</motion.div>

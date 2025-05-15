@@ -8,9 +8,9 @@ import {
 	Table, TableBody, TableCell, TableContainer,
 	TableHead, TableRow, Checkbox, Button, CircularProgress
 } from '@mui/material';
-
 import Loading from '@/components/Loading';
 import { getFilteredMembers } from '@/services/member';
+import AlertIcon from '@/components/icons/AlertIcon';
 
 export default function CarnetTable({ data, loading, selectedIds, setSelectedIds, limit, loadMore, hasMoreData, pageLoading, filters }) {
 	const router = useRouter();
@@ -20,11 +20,24 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
 	const [selectingAllFiltered, setSelectingAllFiltered] = useState(false);
 
   const compactCellStyle = {
-    paddingTop: '4px',
-    paddingBottom: '4px',
-    paddingLeft: '8px',
-    paddingRight: '16px'
+    fontWeight: 'bold',
+    fontSize: '1rem', // 14px ~ text-sm
+    padding: '8px 12px'
   };
+
+    const headerStyle = {	
+    backgroundColor: '#0f172a',
+		color: 'white',
+		fontWeight: 'bold',
+		position: 'sticky',
+		top: 0,
+		zIndex: 1,
+		padding: '6px 8px',
+		fontSize: '1rem',
+		transition: 'all 0.3s ease-in-out',
+
+  }
+
 
 	const translateValidation = (state) => {
 		switch (state) {
@@ -64,11 +77,31 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
 	const visibleIds = nodes.map(n => n.id);
 	const allVisibleSelected = visibleIds.length > 0 && visibleIds.every(id => selectedIds.includes(id));
 
-	const handleToggleId = (id) => {
-		setSelectedIds(prev =>
-			prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
-		);
-	};
+  const handleToggleId = (id) => {
+    const item = nodes.find(n => n.id === id);
+    if (!item) return;
+
+    const updatedIds = selectedIds.includes(id)
+      ? selectedIds.filter(x => x !== id)
+      : [...selectedIds, id];
+
+    setSelectedIds(updatedIds);
+
+    // Actualizar localStorage con objetos completos
+    const stored = JSON.parse(localStorage.getItem("selectedCarnets")) || [];
+    let updatedStored;
+
+    if (selectedIds.includes(id)) {
+      // Deseleccionar: remover el objeto
+      updatedStored = stored.filter(obj => obj.id !== id);
+    } else {
+      // Seleccionar: agregar el objeto
+      updatedStored = [...stored, item];
+    }
+
+    localStorage.setItem("selectedCarnets", JSON.stringify(updatedStored));
+  };
+
 
 	const handleToggleSelectAllVisible = () => {
 		if (allVisibleSelected) {
@@ -76,6 +109,7 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
 				setSelectedIds([]);
 				setAllFilteredIds([]);
 				localStorage.removeItem('selectedCarnetIds');
+        localStorage.removeItem('selectedCarnets');
 			} else {
 				setSelectedIds(prev => prev.filter(id => !visibleIds.includes(id)));
 			}
@@ -94,6 +128,7 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
 			setAllFilteredIds(ids);
 			setSelectedIds(ids);
 			localStorage.setItem('selectedCarnetIds', JSON.stringify(ids));
+      localStorage.setItem('selectedCarnets', JSON.stringify(result));
 		} catch (e) {
 			console.error(e);
 		} finally {
@@ -101,20 +136,10 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
 		}
 	};
 
-  const headerStyle = {	
-    backgroundColor: '#0f172a',
-		color: 'white',
-		fontWeight: 'bold',
-		position: 'sticky',
-		top: 0,
-		zIndex: 1,
-		padding: '6px 8px',
-		fontSize: '0.75rem',
-		transition: 'all 0.3s ease-in-out',
-  }
+
 
   return (
-    <div className="h-full rounded-xl border border-gray-300 shadow-md overflow-hidden relative">
+    <div className="flex flex-col rounded-xl border border-gray-300 shadow-md overflow-hidden relative">
       {loading ? <Loading /> : (
         <div className="flex flex-col flex-1 overflow-hidden">
 
@@ -141,7 +166,7 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
           )}
 
           <TableContainer
-            className="h-full overflow-auto"
+            className="h-full overflow-auto scrollbar-hover"
             sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}
           >
             <Table stickyHeader className="min-w-full" sx={{ flex: '1 1 auto' }}>
@@ -176,16 +201,14 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
                     <TableCell sx={compactCellStyle}>{item.titulacion}</TableCell>
                     <TableCell sx={compactCellStyle}>{item.year}</TableCell>
                     <TableCell sx={compactCellStyle}>
-                      <span className={`px-2 py-0.5 rounded-sm font-medium ${item.validationState === 'VALIDADO' ? 'bg-[#73c66c]/40 text-[#356f30]' :
-                        item.validationState === 'NO VÁLIDO' ? 'bg-[#e66c6c]/40 text-[#852d2d]' :
-                          item.validationState === 'POR VALIDAR' ? 'bg-[#ebd758]/40 text-[#8a7b22]' : ''
-                        }`}>
-                        {item.validationState}
-                      </span>
+                    <span className="flex items-center gap-1 px-2 py-0.5 rounded-sm font-bold">
+                      {item.validationState === 'NO VÁLIDO' && <AlertIcon/>}
+                      {item.validationState}
+                    </span>
+
                     </TableCell>
                     <TableCell sx={compactCellStyle}>
-                      <span className={`px-2 text-xs leading-tight rounded-sm font-medium ${item.printed ? 'bg-[#73c66c]/40 text-[#356f30]' : 'bg-[#e66c6c]/40 text-[#852d2d]'
-                        }`}>
+                      <span className={`px-2 leading-tight rounded-sm font-bold`}>
                         {item.printed ? 'Sí' : 'No'}
                       </span>
                     </TableCell>
@@ -193,7 +216,10 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
                       <div className="flex items-center justify-end gap-3">
                         <button
                           title="Ver carnet"
-                          onClick={() => router.push(`/dashboard/carnet/${item.id}`)}
+                          onClick={() => {
+                            localStorage.setItem('currentCarnet', JSON.stringify(item));
+                            router.push(`/dashboard/carnet/${item.id}`);
+                          }}
                           className="flex items-center justify-center w-6 h-6 rounded-full bg-white hover:scale-110 shadow-lg hover:shadow-lg transition-all duration-300"
                         >
                           <Eye className="w-4 h-4 text-blue-600" />

@@ -51,24 +51,24 @@ export default function Header({ selectedIds, hideSearch = false, hidePrint = fa
   useEffect(() => {
     const delay = setTimeout(() => {
       const input = searchText.trim();
-      const filters = {};
+      const newFilters = {};
 
       if (/^\d+$/.test(input)) {
-        filters.dni = input;
+        newFilters.dni = input;
+        newFilters.fullName = '';
       } else {
-        filters.fullName = input;
+        newFilters.fullName = input;
+        newFilters.dni = '';
       }
 
       if (onSearch) {
-        onSearch({
-          ...filters,
-          limit: 30
-        });
+        onSearch(newFilters); 
       }
     }, 400);
 
     return () => clearTimeout(delay);
   }, [searchText]);
+
 
   return (
     <header>

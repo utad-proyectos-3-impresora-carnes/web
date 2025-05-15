@@ -52,21 +52,28 @@ export default function Page() {
   }, [newFilteredData]);
 
   // Aplicar filtros nuevos
-  const handleApplyFilters = (newFilters) => {
+  const handleApplyFilters = (newPartialFilters) => {
     setLoading(true);
-    setFilters({
-      ...newFilters,
-      limit: 30,
-    });
-    getFilteredMembers({ ...newFilters, limit: 30, offset: 0 }).then(res => {
-      setData(res);
-      setHasMoreData(res.length >= 30);
-      setLoading(false);
-    }).catch(error => {
-      console.error(error);
-      setLoading(false);
-    });
+
+    const updatedFilters = {
+      ...filters,       // mantener lo anterior
+      ...newPartialFilters, // sobrescribir con lo nuevo
+    };
+
+    setFilters(updatedFilters);
+
+    getFilteredMembers({ ...updatedFilters, offset: 0 })
+      .then(res => {
+        setData(res);
+        setHasMoreData(res.length >= 30);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error(error);
+        setLoading(false);
+      });
   };
+
 
   // Cargar más carnets
   const loadMore = () => {

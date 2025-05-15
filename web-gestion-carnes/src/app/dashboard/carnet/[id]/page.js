@@ -19,6 +19,8 @@ export default function CarnetPage() {
   const [memberData, setMemberData] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const currentData = JSON.parse(localStorage.getItem('currentCarnet'));
+
   useEffect(() => {
     if (!id) return;
 
@@ -59,19 +61,19 @@ export default function CarnetPage() {
           <div className="flex-1 space-y-4 text-left">
             <div>
               <p className="text-sm text-gray-500 font-semibold uppercase">Nombre completo</p>
-              <p className="text-base font-medium">{memberData.fullName}</p>
+              <p className="text-base font-medium">{currentData.fullName}</p>
             </div>
             <div>
               <p className="text-sm text-gray-500 font-semibold uppercase">DNI</p>
-              <p className="text-base font-medium">{memberData.dni}</p>
+              <p className="text-base font-medium">{currentData.dni}</p>
             </div>
             <div>
               <p className="text-sm text-gray-500 font-semibold uppercase">Titulación</p>
-              <p className="text-base font-medium">{memberData.group?.name || "—"}</p>
+              <p className="text-base font-medium">{currentData.titulacion || "—"}</p>
             </div>
             <div>
               <p className="text-sm text-gray-500 font-semibold uppercase">Año</p>
-              <p className="text-base font-medium">{memberData.creationYear || "—"}</p>
+              <p className="text-base font-medium">{currentData.year || "—"}</p>
             </div>
           </div>
 
