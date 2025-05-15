@@ -19,10 +19,36 @@ export default function FilterSidebar({ onApply }) {
 	const [states, setStates] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [customYear, setCustomYear] = useState("");
-
 	const [selected, setSelected] = useState({});
-
 	const router = useRouter();
+
+	const CustomRadio = ({ name, value, checked, onChange, label }) => (
+		<label className="flex items-center gap-3 py-2 pl-5 cursor-pointer">
+			<input
+			type="radio"
+			name={name}
+			value={value}
+			checked={checked}
+			onChange={onChange}
+			className="peer hidden"
+			/>
+			<span className="w-4 h-4 rounded-full border border-gray-400 peer-checked:border-blue-600 peer-checked:ring-2 peer-checked:ring-blue-200 transition"></span>
+			<span className="text-[16px] leading-[20px] font-normal text-[#14192C] font-[Montserrat]">
+			{label}
+			</span>
+		</label>
+	);
+
+
+	const CloseIcon = () => (
+  		<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+    	<path
+      		d="M3.92253 2.74414L2.74414 3.92253L8.82162 10L2.74414 16.0775L3.92253 17.2559L10 11.1784L16.0775 17.2559L17.2559 16.0775L11.1784 10L17.2559 3.92253L16.0775 2.74414L10 8.82162L3.92253 2.74414Z"
+      		fill="#F05135"
+    	/>
+  		</svg>
+	);
+
 
 	useEffect(() => {
 		getAllGroups()
@@ -48,7 +74,8 @@ export default function FilterSidebar({ onApply }) {
 	const sectionWrapperStyle = "bg-white text-[#101426] border border-white rounded-md overflow-hidden";
 	const sectionButtonStyle = "w-full flex justify-between items-center px-4 py-4 text-base font-medium bg-[#101426] text-white";
 	const labelStyle = "flex items-center space-x-3 py-2 pl-5 text-[16px] leading-[20px] font-normal text-[#14192C] font-[Montserrat]";
-	const radioStyle = "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500";
+	const radioStyle = "w-4 h-4 accent-blue-600";
+	const clearSelectionStyle = "flex items-center justify-start gap-[10px] px-4 py-2 text-[#F05135] font-medium font-montserrat text-[16px] leading-[20px]";
 	const chevronStyle = (open) => `w-5 h-5 transition-transform duration-300 ${open ? "rotate-180" : ""}`;
 
 	const updateFilters = (newSelected) => {
@@ -98,6 +125,13 @@ export default function FilterSidebar({ onApply }) {
 			<div className="flex flex-col">
 				{/* TITULACIÓN */}
 				<div className={sectionWrapperStyle}>
+					{Object.keys(selected).length > 0 && (
+					<div className={clearSelectionStyle} onClick={clearFilters}>
+						<CloseIcon />
+						<span>Borrar filtros</span>
+					</div>
+				)}
+
 					<button onClick={() => setOpenSections(p => ({ ...p, titulacion: !p.titulacion }))} className={sectionButtonStyle}>
 						Titulación
 						<ChevronDown className={chevronStyle(openSections.titulacion)} />
@@ -225,16 +259,6 @@ export default function FilterSidebar({ onApply }) {
 							</motion.div>
 						)}
 					</AnimatePresence>
-				</div>
-
-				{/* CLEAR BUTTON */}
-				<div className="px-4 mt-4">
-					<button
-						className="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded"
-						onClick={clearFilters}
-					>
-						Eliminar Filtros
-					</button>
 				</div>
 			</div>
 		</div>
