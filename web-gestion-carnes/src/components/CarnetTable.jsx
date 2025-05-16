@@ -12,21 +12,43 @@ import Loading from '@/components/Loading';
 import { getFilteredMembers } from '@/services/member';
 import AlertIcon from '@/components/icons/AlertIcon';
 
-export default function CarnetTable({ data, loading, selectedIds, setSelectedIds, limit, loadMore, hasMoreData, pageLoading, filters }) {
+export default function CarnetTable({ data, loading, selectedIds: parentSelectedIds, setSelectedIds: setParentSelectedIds, limit, loadMore, hasMoreData, pageLoading, filters }) {
 	const router = useRouter();
 	const observerRef = useRef();
 	const [allFilteredIds, setAllFilteredIds] = useState([]);
 	const [selectingAllFiltered, setSelectingAllFiltered] = useState(false);
 
-  const compactCellStyle = {
-    fontWeight: 'bold',
-    fontSize: '1rem', // 14px ~ text-sm
-    padding: '6px 8px',
-    allign: 'left',
-  };
+	const [selectedIds, setSelectedIds] = useState(() => {
+		if (typeof window === "undefined") return [];
+		try {
+			return JSON.parse(localStorage.getItem("selectedCarnetIds") || "[]");
+		} catch {
+			return [];
+		}
+	});
 
-    const headerStyle = {	
-    backgroundColor: '#0f172a',
+const handleClearSelection = () => {
+  setSelectedIds([]);
+  setAllFilteredIds([]);
+  localStorage.removeItem('selectedCarnetIds');
+  localStorage.removeItem('selectedCarnets');
+};
+
+
+
+useEffect(() => {
+		setParentSelectedIds(selectedIds);
+	}, [selectedIds]);
+
+	const compactCellStyle = {
+		fontWeight: 'bold',
+		fontSize: '1rem',
+		padding: '6px 8px',
+		allign: 'left',
+	};
+
+	const headerStyle = {
+		backgroundColor: '#0f172a',
 		color: 'white',
 		fontWeight: 'bold',
 		position: 'sticky',
@@ -35,9 +57,7 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
 		padding: '8px 8px',
 		fontSize: '1rem',
 		transition: 'all 0.3s ease-in-out',
-
-  }
-
+	};
 
 	const translateValidation = (state) => {
 		switch (state) {
@@ -77,31 +97,27 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
 	const visibleIds = nodes.map(n => n.id);
 	const allVisibleSelected = visibleIds.length > 0 && visibleIds.every(id => selectedIds.includes(id));
 
-  const handleToggleId = (id) => {
-    const item = nodes.find(n => n.id === id);
-    if (!item) return;
+	const handleToggleId = (id) => {
+		const item = nodes.find(n => n.id === id);
+		if (!item) return;
 
-    const updatedIds = selectedIds.includes(id)
-      ? selectedIds.filter(x => x !== id)
-      : [...selectedIds, id];
+		const updatedIds = selectedIds.includes(id)
+			? selectedIds.filter(x => x !== id)
+			: [...selectedIds, id];
 
-    setSelectedIds(updatedIds);
+		setSelectedIds(updatedIds);
 
-    // Actualizar localStorage con objetos completos
-    const stored = JSON.parse(localStorage.getItem("selectedCarnets")) || [];
+    const stored = JSON.parse(localStorage.getItem("selectedCarnets") || "[]");
     let updatedStored;
 
-    if (selectedIds.includes(id)) {
-      // Deseleccionar: remover el objeto
-      updatedStored = stored.filter(obj => obj.id !== id);
-    } else {
-      // Seleccionar: agregar el objeto
-      updatedStored = [...stored, item];
-    }
+		if (selectedIds.includes(id)) {
+			updatedStored = stored.filter(obj => obj.id !== id);
+		} else {
+			updatedStored = [...stored.filter(obj => obj.id !== id), item];
+		}
 
-    localStorage.setItem("selectedCarnets", JSON.stringify(updatedStored));
-  };
-
+		localStorage.setItem("selectedCarnets", JSON.stringify(updatedStored));
+	};
 
 	const handleToggleSelectAllVisible = () => {
 		if (allVisibleSelected) {
@@ -109,7 +125,7 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
 				setSelectedIds([]);
 				setAllFilteredIds([]);
 				localStorage.removeItem('selectedCarnetIds');
-        localStorage.removeItem('selectedCarnets');
+				localStorage.removeItem('selectedCarnets');
 			} else {
 				setSelectedIds(prev => prev.filter(id => !visibleIds.includes(id)));
 			}
@@ -128,15 +144,13 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
 			setAllFilteredIds(ids);
 			setSelectedIds(ids);
 			localStorage.setItem('selectedCarnetIds', JSON.stringify(ids));
-      localStorage.setItem('selectedCarnets', JSON.stringify(result));
+			localStorage.setItem('selectedCarnets', JSON.stringify(result));
 		} catch (e) {
 			console.error(e);
 		} finally {
 			setSelectingAllFiltered(false);
 		}
 	};
-
-
 
   return (
     <div className="flex flex-col rounded-tl-xl border border-gray-300 shadow-md overflow-hidden relative overflow-y-auto">
@@ -146,10 +160,22 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
           {selectedIds.length > 0 && (
             <div className="sticky top-0 bg-[#0f172a] text-white px-4 py-2 text-xs border-b border-gray-700 z-20 transition-all duration-300 ease-in-out">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="transition-all duration-300 ease-in-out">
-                  Seleccionados: <strong>{selectedIds.length}</strong>
+                <span className="transition-all duration-300 ease-in-out font-montserrat text-lg">
+                  {selectedIds.length === 1 ? (
+                    <span>Se ha seleccionado 1 carnet para imprimir</span>
+                  ) : (
+                    <span>Se han seleccionado <strong>{selectedIds.length}</strong> carnets para imprimir</span>
+                  )}
                 </span>
                 <div className="flex gap-3">
+                  <Button
+                    variant="text"
+                    sx={{ color: '#ef4444', textTransform: 'none',  }}
+                    onClick={handleClearSelection}
+                  >
+                    Limpiar selección
+                  </Button>
+
                   {(allFilteredIds.length === 0 && selectedIds.length === visibleIds.length) && (
                     <Button
                       variant="text"
@@ -205,7 +231,6 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
                       {item.validationState === 'NO VÁLIDO' && <AlertIcon/>}
                       {item.validationState}
                     </span>
-
                     </TableCell>
                     <TableCell sx={compactCellStyle}>
                       <span className={`px-2 leading-tight rounded-sm font-bold`}>
@@ -262,3 +287,4 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
     </div>
   );
 }
+
