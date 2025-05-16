@@ -5,14 +5,13 @@ import { Search, User, Printer, LogOut } from "@deemlol/next-icons";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { deleteAuthToken } from "@/services/tokenHandler";
-import WarningModal from "./WarningModal";
 import { X } from "@deemlol/next-icons";
+import { handlePrint } from "@/app/utils/handlePrint";
 
-export default function Header({ selectedIds, hideSearch = false, hidePrint = false, onSearch, hideUser = false, showCancelbutton = false }) {
+export default function Header({ selectedIds, hideSearch = false, hidePrint = false, onSearch, hideUser = false, showCancelbutton = false, showWarning, setShowWarning, callPrint }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [clientMounted, setClientMounted] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const [showWarning, setShowWarning] = useState(false);
   const [firstInvalidId, setFirstInvalidId] = useState(null);
 
 
@@ -29,7 +28,18 @@ export default function Header({ selectedIds, hideSearch = false, hidePrint = fa
     }
   };
 
-  const handlePrint = (selectedIds) => {
+  const printMembers = (selectedIds) => {
+    if (!selectedIds || selectedIds.length === 0) {
+      alert("No hay carnets seleccionados para imprimir.");
+      return;
+    }
+
+    handleWarningModal();
+
+    if (showWarning) {
+      return;
+    }
+
     const stored = localStorage.getItem('selectedCarnetIds');
     const storedIds = stored ? JSON.parse(stored) : [];
     const selected = storedIds.length > 0 ? storedIds : selectedIds;
@@ -45,8 +55,24 @@ export default function Header({ selectedIds, hideSearch = false, hidePrint = fa
       return;
     }
   
-    console.log("Imprimiendo los carnets con IDs:", selected);
+    handlePrint(selected);
   };
+
+  const handleWarningModal = () => {
+    if (typeof window === "undefined") return false;
+
+    try {
+      const stored = localStorage.getItem("selectedCarnets");
+      if (!stored) return false;
+
+      const allStates = JSON.parse(stored).map(c => c.validationState);
+      return allStates.some(state => state !== "VALIDADO");
+    } catch {
+      return false;
+    }
+  };
+
+
   
 
   useEffect(() => {
@@ -109,7 +135,7 @@ export default function Header({ selectedIds, hideSearch = false, hidePrint = fa
           {!hidePrint && (
             <button
               className="flex items-center bg-white text-[#0864ec] px-4 py-2 rounded-md hover:bg-gray-100 transition text-sm font-semibold"
-              onClick={() => handlePrint(selectedIds)}
+              onClick={() => printMembers(selectedIds)}
             >
               IMPRIMIR
               <Printer className="ml-2 w-5 h-5" />
@@ -153,6 +179,8 @@ export default function Header({ selectedIds, hideSearch = false, hidePrint = fa
               )}
             </div>
           )}
+
+
         </div>
       </div>
     </header>

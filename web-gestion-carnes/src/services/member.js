@@ -139,22 +139,20 @@ export async function editMemberValidatioStatus(memberId, validationState) {
  * @returns Un aviso de si los miembros se pusieron a la cola de imprimir.
  */
 export async function printMembers(members) {
-
-	try {
-
-		return await callServer(
-			`/api/member/printMembers`,
-			await getAuthToken(),
-			{
-				method: "PATCH",
-				body: JSON.stringify(members)
-			}
-		);
-
-
-	} catch (error) {
-		console.error(error);
-		throw new Error("Error al manda a imprimir miembros");
-	}
-
+  try {
+    return await callServer(
+      `/api/member/printMembers`,
+      await getAuthToken(),
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ memberIds: members }) 
+      }
+    );
+  } catch (error) {
+    console.error(error);
+    throw new Error("Error al mandar a imprimir miembros");
+  }
 }

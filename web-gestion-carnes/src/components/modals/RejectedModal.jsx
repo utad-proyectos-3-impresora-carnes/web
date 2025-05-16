@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { X, AlertTriangle } from "lucide-react";
-import AlertIcon from "./icons/AlertIcon";
+import { X } from "lucide-react";
+import AlertIcon from "../icons/AlertIcon";
 
 export default function CarnetRejectModal({ onClose, onSend }) {
   const [reason, setReason] = useState("imagen");

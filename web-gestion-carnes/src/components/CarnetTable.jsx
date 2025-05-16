@@ -15,7 +15,6 @@ import AlertIcon from '@/components/icons/AlertIcon';
 export default function CarnetTable({ data, loading, selectedIds, setSelectedIds, limit, loadMore, hasMoreData, pageLoading, filters }) {
 	const router = useRouter();
 	const observerRef = useRef();
-
 	const [allFilteredIds, setAllFilteredIds] = useState([]);
 	const [selectingAllFiltered, setSelectingAllFiltered] = useState(false);
 

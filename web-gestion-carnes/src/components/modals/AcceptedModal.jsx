@@ -1,7 +1,7 @@
 "use client";
 
 import { X } from "@deemlol/next-icons";
-import AlertIcon from "./icons/AlertIcon";
+import AlertIcon from "../icons/AlertIcon";
 
 export default function AcceptedModal({ onClose, onConfirm }) {
   return (

@@ -11,8 +11,8 @@ import {
 } from "@/services/member";
 import { Send } from "@deemlol/next-icons";
 import CarnetTable2 from "@/components/CarnetTable2";
-import CarnetRejectModal from "@/components/RejectedModal";
-import AcceptedModal from "@/components/AcceptedModal";
+import CarnetRejectModal from "@/components/modals/RejectedModal";
+import AcceptedModal from "@/components/modals/AcceptedModal";
 
 export default function CarnetPage() {
   const { id } = useParams();
