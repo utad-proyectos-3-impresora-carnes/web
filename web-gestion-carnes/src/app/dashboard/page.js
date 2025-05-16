@@ -113,7 +113,7 @@ export default function Page() {
             </aside>
 
             {/* Contenido principal */}
-            <main className="flex-1 overflow-y-auto px-0 mt-1">
+            <main className="flex-1 flex flex-col px-0 mt-1">
               <CarnetTable
                 data={data}
                 loading={loading}

@@ -9,7 +9,10 @@ import {
   getFilteredMembers,
   editMemberValidatioStatus,
 } from "@/services/member";
-import { Mail } from "@deemlol/next-icons";
+import { Send } from "@deemlol/next-icons";
+import CarnetTable2 from "@/components/CarnetTable2";
+import CarnetRejectModal from "@/components/RejectedModal";
+import AcceptedModal from "@/components/AcceptedModal";
 
 export default function CarnetPage() {
   const { id } = useParams();
@@ -18,8 +21,12 @@ export default function CarnetPage() {
   const [imageSrc, setImageSrc] = useState(null);
   const [memberData, setMemberData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [showAcceptModal, setShowAcceptModal] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  const currentData = JSON.parse(localStorage.getItem('currentCarnet'));
+  const currentData = JSON.parse(localStorage.getItem("currentCarnet"));
 
   useEffect(() => {
     if (!id) return;
@@ -33,6 +40,7 @@ export default function CarnetPage() {
         const res = await getFilteredMembers({ _id: id });
         if (res.length > 0) {
           setMemberData(res[0]);
+          setSelectedStatus(res[0].validationState);
         } else {
           throw new Error("Carnet no encontrado");
         }
@@ -45,119 +53,124 @@ export default function CarnetPage() {
     };
 
     fetchData();
-  }, [id, router]);
+  }, [id, router, refreshKey]);
+
+  const updateLocalStorageStatus = (newStatus) => {
+    const displayStatus = newStatus === "validated" ? "VALIDADO" : "NO VÁLIDO";
+    const updatedCurrent = { ...currentData, validationState: displayStatus };
+    localStorage.setItem("currentCarnet", JSON.stringify(updatedCurrent));
+
+    const stored = localStorage.getItem("selectedCarnets");
+    const parsed = stored ? JSON.parse(stored) : [];
+    const updated = parsed.map((m) =>
+      m.id === updatedCurrent.id ? { ...m, validationState: displayStatus } : m
+    );
+    localStorage.setItem("selectedCarnets", JSON.stringify(updated));
+    setRefreshKey((prev) => prev + 1);
+  };
+
+  const handleRejectSubmit = async (reason) => {
+    try {
+      await editMemberValidatioStatus(currentData.id, "rejected");
+      setMemberData((prev) => ({ ...prev, validationState: "rejected" }));
+      updateLocalStorageStatus("rejected");
+      alert("Notificación enviada por correo");
+      setShowRejectModal(false);
+    } catch (error) {
+      console.error("Error al rechazar carnet:", error);
+    }
+  };
+
+  const handleAcceptConfirm = async () => {
+    try {
+      await editMemberValidatioStatus(currentData.id, "validated");
+      setMemberData((prev) => ({ ...prev, validationState: "validated" }));
+      updateLocalStorageStatus("validated");
+      alert("Notificación enviada por correo");
+      setShowAcceptModal(false);
+    } catch (error) {
+      console.error("Error al validar carnet:", error);
+    }
+  };
+
+  const handleNotify = () => {
+    if (selectedStatus === "validated") {
+      setShowAcceptModal(true);
+    } else if (selectedStatus === "rejected") {
+      setShowRejectModal(true);
+    }
+  };
 
   if (loading) return <p className="text-center mt-10">Cargando carnet...</p>;
   if (!imageSrc || !memberData) return <p>Error cargando el carnet</p>;
 
   return (
     <>
-      <Header selectedIds={[]} hideSearch hidePrint />
+      <Header selectedIds={[]} hideSearch hideUser showCancelbutton />
 
-      <div className="min-h-screen bg-gray-100 pt-20 px-6 flex flex-col items-center">
-        {/* Contenedor principal */}
-        <div className="w-full max-w-6xl mt-16 bg-white shadow-md rounded-lg p-6 flex flex-col lg:flex-row gap-6 justify-between">
-          {/* Columna izquierda - Datos */}
-          <div className="flex-1 space-y-4 text-left">
-            <div>
-              <p className="text-sm text-gray-500 font-semibold uppercase">Nombre completo</p>
-              <p className="text-base font-medium">{currentData.fullName}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500 font-semibold uppercase">DNI</p>
-              <p className="text-base font-medium">{currentData.dni}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500 font-semibold uppercase">Titulación</p>
-              <p className="text-base font-medium">{currentData.titulacion || "—"}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500 font-semibold uppercase">Año</p>
-              <p className="text-base font-medium">{currentData.year || "—"}</p>
-            </div>
+      <div className="min-h-screen bg-gray-100 pt-20 px-6 flex flex-col items-start">
+        <div className="w-full flex flex-row gap-8 items-start">
+          <div className="ml-[-32px]">
+            <CarnetTable2 key={refreshKey} />
           </div>
 
-          {/* Columna derecha - Carnet + controles debajo */}
-          <div className="flex-1 flex flex-col items-start gap-6">
-            {/* Imagen */}
-            <Image
-              src={imageSrc}
-              alt="Carnet de usuario"
-              width={400}
-              height={0}
-              layout="intrinsic"
-              className="rounded-lg shadow border w-full max-w-xs"
-            />
+          <div className="w-[1136px] h-[575px] rounded-[12px] p-6 flex flex-col justify-between">
+            <div className="flex flex-col items-start gap-6">
+              <Image
+                src={imageSrc}
+                alt="Carnet de usuario"
+                width={400}
+                height={0}
+                layout="intrinsic"
+                className="rounded-lg w-full"
+              />
+            </div>
 
-            {/* Estado + notificación debajo, alineado a la izquierda */}
-            <div className="w-full max-w-xs space-y-4">
-              <div>
-                <p className="text-sm font-semibold text-gray-800 mb-2">Estado del carnet</p>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <label className="flex items-center gap-2 text-sm text-gray-700 font-medium">
-                    <input
-                      type="radio"
-                      value="to_validate"
-                      checked={memberData.validationState === "to_validate"}
-                      onChange={async () => {
-                        await editMemberValidatioStatus(id, "to_validate");
-                        setMemberData((prev) => ({ ...prev, validationState: "to_validate" }));
-                      }}
-                    />
-                    Por validar
-                  </label>
+            <div className="flex items-center gap-6 mt-6">
+              <p className="text-lg font-bold text-black uppercase whitespace-nowrap">ESTADO DEL CARNET:</p>
 
-                  <label className="flex items-center gap-2 text-sm text-gray-700 font-medium">
-                    <input
-                      type="radio"
-                      value="rejected"
-                      checked={memberData.validationState === "rejected"}
-                      onChange={async () => {
-                        await editMemberValidatioStatus(id, "rejected");
-                        setMemberData((prev) => ({ ...prev, validationState: "rejected" }));
-                      }}
-                    />
-                    No válido
-                  </label>
-
-                  <label className="flex items-center gap-2 text-sm text-gray-700 font-medium">
-                    <input
-                      type="radio"
-                      value="validated"
-                      checked={memberData.validationState === "validated"}
-                      onChange={async () => {
-                        await editMemberValidatioStatus(id, "validated");
-                        setMemberData((prev) => ({ ...prev, validationState: "validated" }));
-                      }}
-                    />
-                    Válido
-                  </label>
+              {["rejected", "validated"].map((state) => (
+                <div
+                  key={state}
+                  className="flex items-center gap-2 cursor-pointer"
+                  onClick={() => setSelectedStatus(state)}
+                >
+                  <div className="w-5 h-5 border-2 rounded-full flex items-center justify-center border-[#0065EF]">
+                    {selectedStatus === state && (
+                      <div className="w-3 h-3 rounded-full bg-[#0065EF]" />
+                    )}
+                  </div>
+                  <span className="text-lg font-bold text-black">
+                    {state === "rejected" ? "NO VÁLIDO" : "PARA IMPRIMIR"}
+                  </span>
                 </div>
-              </div>
-
-              <button
-                className="flex items-center justify-center gap-2 bg-gray-800 text-white px-5 py-2 rounded-md text-sm font-semibold hover:bg-gray-900 transition w-full"
-                onClick={() => {
-                  alert("Correo de notificación enviado (simulado)");
-                }}
-              >
-                Notificar por correo
-                <Mail className="w-4 h-4" />
-              </button>
+              ))}
             </div>
-          </div>
-        </div>
 
-        {/* Botón Dashboard más arriba */}
-        <div className="mt-12">
-          <button
-            onClick={() => router.push("/dashboard")}
-            className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition"
-          >
-            Dashboard
-          </button>
+            <button
+              className="mt-4 flex items-center justify-center gap-3 w-[366px] h-[60px] bg-[#0065EF] text-white rounded-[4px] px-4 py-3 text-xl font-normal hover:opacity-90"
+              onClick={handleNotify}
+            >
+              NOTIFICAR POR CORREO
+              <Send className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
+
+      {showRejectModal && (
+        <CarnetRejectModal
+          onClose={() => setShowRejectModal(false)}
+          onSend={handleRejectSubmit}
+        />
+      )}
+
+      {showAcceptModal && (
+        <AcceptedModal
+          onClose={() => setShowAcceptModal(false)}
+          onConfirm={handleAcceptConfirm}
+        />
+      )}
     </>
   );
 }

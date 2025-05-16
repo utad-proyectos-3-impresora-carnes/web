@@ -6,8 +6,9 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { deleteAuthToken } from "@/services/tokenHandler";
 import WarningModal from "./WarningModal";
+import { X } from "@deemlol/next-icons";
 
-export default function Header({ selectedIds, hideSearch = false, hidePrint = false, onSearch }) {
+export default function Header({ selectedIds, hideSearch = false, hidePrint = false, onSearch, hideUser = false, showCancelbutton = false }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [clientMounted, setClientMounted] = useState(false);
   const [searchText, setSearchText] = useState("");
@@ -98,6 +99,8 @@ export default function Header({ selectedIds, hideSearch = false, hidePrint = fa
               />
             </div>
           )}
+
+
         </div>
 
         {/* DERECHA: BOTONES */}
@@ -112,30 +115,44 @@ export default function Header({ selectedIds, hideSearch = false, hidePrint = fa
               <Printer className="ml-2 w-5 h-5" />
             </button>
           )}
-
-          {/* Botón USUARIO + Dropdown */}
-          <div className="relative">
+          {/* Botón CANCELAR, oculto si showCancelbutton === false */}
+          {showCancelbutton && (
             <button
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center bg-white text-[#0864ec] px-4 py-2 rounded-md hover:bg-gray-100 transition text-sm font-semibold"
+              className="flex items-center border border-white text-white px-4 py-2 rounded-md hover:bg-white hover:text-[#0864ec] transition text-sm font-semibold"
+              onClick={() => router.push("/dashboard")}
             >
-              Usuario
-              <User className="ml-2 w-5 h-5" />
+              <X className="mr-2 w-5 h-5" />
+              CANCELAR OPERACIÓN
             </button>
 
-            {/* Dropdown */}
-            {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-40 bg-white shadow-md rounded-md border z-50">
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center w-full px-4 py-2 text-red-600 hover:bg-gray-100 text-sm"
-                >
-                  Cerrar sesión
-                  <LogOut className="ml-2 w-5 h-5" />
-                </button>
-              </div>
-            )}
-          </div>
+
+
+          )}
+
+          {/* Botón USUARIO + Dropdown */}
+          {!hideUser && (
+            <div className="relative">
+              <button
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="flex items-center bg-white text-[#0864ec] px-4 py-2 rounded-md hover:bg-gray-100 transition text-sm font-semibold"
+              >
+                Usuario
+                <User className="ml-2 w-5 h-5" />
+              </button>
+              {/* Dropdown */}
+              {dropdownOpen && (
+                <div className="absolute right-0 mt-2 w-40 bg-white shadow-md rounded-md border z-50">
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center w-full px-4 py-2 text-red-600 hover:bg-gray-100 text-sm"
+                  >
+                    Cerrar sesión
+                    <LogOut className="ml-2 w-5 h-5" />
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </header>

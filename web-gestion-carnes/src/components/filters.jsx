@@ -94,10 +94,26 @@ export default function FilterSidebar({ onApply }) {
 	};
 
 	const clearFilters = () => {
-		setSelected({});
-		setCustomYear("");
-		onApply({});
+	const emptyFilters = {
+		group: "",
+		year: null,
+		printed: null,
+		validationState: "",
+		limit: 30,
 	};
+
+	setSelected({});
+	setCustomYear("");
+	setOpenSections({
+		titulacion: false,
+		estado: false,
+		anioAcademico: false,
+		impreso: false,
+	});
+
+	onApply(emptyFilters); // fuerza búsqueda sin filtros
+	};
+
 
 	const handleCustomYearEnter = (e) => {
 		if (e.key === "Enter" && selected.year === "otros" && customYear) {

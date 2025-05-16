@@ -22,7 +22,8 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
   const compactCellStyle = {
     fontWeight: 'bold',
     fontSize: '1rem', // 14px ~ text-sm
-    padding: '8px 12px'
+    padding: '6px 8px',
+    allign: 'left',
   };
 
     const headerStyle = {	
@@ -32,7 +33,7 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
 		position: 'sticky',
 		top: 0,
 		zIndex: 1,
-		padding: '6px 8px',
+		padding: '8px 8px',
 		fontSize: '1rem',
 		transition: 'all 0.3s ease-in-out',
 
@@ -139,7 +140,7 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
 
 
   return (
-    <div className="flex flex-col rounded-xl border border-gray-300 shadow-md overflow-hidden relative">
+    <div className="flex flex-col rounded-tl-xl border border-gray-300 shadow-md overflow-hidden relative overflow-y-auto">
       {loading ? <Loading /> : (
         <div className="flex flex-col flex-1 overflow-hidden">
 
@@ -166,7 +167,7 @@ export default function CarnetTable({ data, loading, selectedIds, setSelectedIds
           )}
 
           <TableContainer
-            className="h-full overflow-auto scrollbar-hover"
+            className="h-full overflow-auto"
             sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}
           >
             <Table stickyHeader className="min-w-full" sx={{ flex: '1 1 auto' }}>
