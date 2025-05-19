@@ -17,9 +17,7 @@ export default async function callServer(url, token, options = {}) {
 			Authorization: `Bearer ${token}`
 		}
 
-		// Makes the query.
-		console.log("Llamando a la API: ", "https://api-hxge.onrender.com" + url);
-		const res = await fetch("https://api-hxge.onrender.com" + url, options);
+		const res = await fetch(process.env.NEXT_PUBLIC_API_URL + url, options);
 
 		// Si la query falla, lanza error.
 		if (res.ok !== true) {
