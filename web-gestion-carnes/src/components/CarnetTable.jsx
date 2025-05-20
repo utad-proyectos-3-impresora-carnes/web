@@ -12,6 +12,7 @@ import Loading from '@/components/Loading';
 import { getFilteredMembers } from '@/services/member';
 import AlertIcon from '@/components/icons/AlertIcon';
 import CheckedIcon from './icons/CheckedIcon';
+import ClockIcon from './icons/ClockIcon';
 
 export default function CarnetTable({ data, loading, selectedIds: parentSelectedIds, setSelectedIds: setParentSelectedIds, limit, loadMore, hasMoreData, pageLoading, filters }) {
 	const router = useRouter();
@@ -231,6 +232,7 @@ useEffect(() => {
                     <span className="flex items-center gap-1 px-2 py-0.5 rounded-sm font-medium">
                       {item.validationState === 'NO VÁLIDO' && <AlertIcon/>}
                       {item.validationState === 'VALIDADO' && <CheckedIcon/>}
+                      {item.validationState === 'POR VALIDAR' && <ClockIcon />}
                       {item.validationState}
                     </span>
                     </TableCell>
