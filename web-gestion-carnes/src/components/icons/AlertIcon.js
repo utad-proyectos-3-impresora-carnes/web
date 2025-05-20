@@ -7,3 +7,4 @@ export default function AlertIcon({ width = 25, height = 24 }) {
     </svg>
   );
 }
+

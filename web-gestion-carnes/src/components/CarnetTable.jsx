@@ -11,6 +11,7 @@ import {
 import Loading from '@/components/Loading';
 import { getFilteredMembers } from '@/services/member';
 import AlertIcon from '@/components/icons/AlertIcon';
+import CheckedIcon from './icons/CheckedIcon';
 
 export default function CarnetTable({ data, loading, selectedIds: parentSelectedIds, setSelectedIds: setParentSelectedIds, limit, loadMore, hasMoreData, pageLoading, filters }) {
 	const router = useRouter();
@@ -41,7 +42,7 @@ useEffect(() => {
 	}, [selectedIds]);
 
 	const compactCellStyle = {
-		fontWeight: 'bold',
+		fontWeight: 500,
 		fontSize: '1rem',
 		padding: '6px 8px',
 		allign: 'left',
@@ -50,7 +51,7 @@ useEffect(() => {
 	const headerStyle = {
 		backgroundColor: '#0f172a',
 		color: 'white',
-		fontWeight: 'bold',
+		fontWeight: 500,
 		position: 'sticky',
 		top: 0,
 		zIndex: 1,
@@ -227,13 +228,14 @@ useEffect(() => {
                     <TableCell sx={compactCellStyle}>{item.titulacion}</TableCell>
                     <TableCell sx={compactCellStyle}>{item.year}</TableCell>
                     <TableCell sx={compactCellStyle}>
-                    <span className="flex items-center gap-1 px-2 py-0.5 rounded-sm font-bold">
+                    <span className="flex items-center gap-1 px-2 py-0.5 rounded-sm font-medium">
                       {item.validationState === 'NO VÁLIDO' && <AlertIcon/>}
+                      {item.validationState === 'VALIDADO' && <CheckedIcon/>}
                       {item.validationState}
                     </span>
                     </TableCell>
                     <TableCell sx={compactCellStyle}>
-                      <span className={`px-2 leading-tight rounded-sm font-bold`}>
+                      <span className={`px-2 leading-tight rounded-sm font-medium`}>
                         {item.printed ? 'Sí' : 'No'}
                       </span>
                     </TableCell>

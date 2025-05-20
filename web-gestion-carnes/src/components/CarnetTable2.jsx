@@ -40,7 +40,7 @@ export default function CarnetTable2() {
   }, []);
 
   const compactCellStyle = {
-    fontWeight: 'bold',
+    fontWeight: 500,
     fontSize: '1rem',
     padding: '6px 16px',
   };
@@ -48,7 +48,7 @@ export default function CarnetTable2() {
   const headerStyle = {
     backgroundColor: '#0f172a',
     color: 'white',
-    fontWeight: 'bold',
+    fontWeight: 500,
     position: 'sticky',
     top: 0,
     zIndex: 1,
@@ -58,7 +58,7 @@ export default function CarnetTable2() {
   };
 
   return (
-    <div className="w-[750px] h-[965px] ml-[-32px] pt-4 pr-4 pb-4 pl-8 gap-6 font-bold ">
+    <div className="w-[750px] h-[965px] ml-[-32px] pt-4 pr-4 pb-4 pl-8 gap-6 font-medium ">
       <TableContainer className="rounded-tr-lg">
         <Table stickyHeader sx={{ borderCollapse: 'collapse' }}>
           <TableHead>
