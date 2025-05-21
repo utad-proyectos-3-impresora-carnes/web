@@ -29,35 +29,38 @@ export default function Header({ selectedIds, hideSearch = false, hidePrint = fa
 		}
 	};
 
-	const printMembers = (selectedIds) => {
-		if (!selectedIds || selectedIds.length === 0) {
-			alert("No hay carnets seleccionados para imprimir.");
-			return;
-		}
+  const printMembers = (selectedIds) => {
+    if (!selectedIds || selectedIds.length === 0) {
+      alert("No hay carnets seleccionados para imprimir.");
+      return;
+    }
 
-		handleWarningModal();
+    handleWarningModal();
 
-		if (showWarning) {
-			return;
-		}
+    if (showWarning) {
+      return;
+    }
 
-		const stored = localStorage.getItem('selectedCarnetIds');
-		const storedIds = stored ? JSON.parse(stored) : [];
-		const selected = storedIds.length > 0 ? storedIds : selectedIds;
+    const stored = localStorage.getItem('selectedCarnetIds');
+    const storedIds = stored ? JSON.parse(stored) : [];
+    const selected = storedIds.length > 0 ? storedIds : selectedIds;
 
-		const invalid = selected.find(id => {
-			const member = JSON.parse(localStorage.getItem(`member_${id}`));
-			return member && member.validationState !== 'validated';
-		});
+    const allMembers = JSON.parse(localStorage.getItem('selectedCarnets')) || [];
 
-		if (invalid) {
-			setFirstInvalidId(invalid);
-			setShowWarning(true);
-			return;
-		}
+    const invalid = selected.find(id => {
+      const member = allMembers.find(m => m.id === id);
+      return member && member.validationState !== 'validated';
+    });
 
-		setSnackbarAlert(handlePrint(selected));
-	};
+    if (invalid) {
+      setFirstInvalidId(invalid);
+      setShowWarning(true);
+      return;
+    }
+
+    setSnackbarAlert(handlePrint(selected));
+  };
+
 
 	const handleWarningModal = () => {
 		if (typeof window === "undefined") return false;
